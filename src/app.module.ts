@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
+import { ObstetraModule } from './obstetra/obstetra.module';
+import { EspecialidadModule } from './especialidad/especialidad.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { RedisModule } from './redis/redis.module';
       },
     }),
     RedisModule,
+    ObstetraModule,
+    EspecialidadModule,
   ],
   controllers: [],
   providers: [RedisService],

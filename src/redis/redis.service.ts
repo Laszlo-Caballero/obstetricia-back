@@ -18,6 +18,6 @@ export class RedisService implements OnModuleInit {
 
   async get<T>(key: string): Promise<T | null> {
     const value = await this.client.get(key);
-    return value ? JSON.parse(value as string) : null;
+    return value ? JSON.parse(value) : null;
   }
 }
