@@ -1,5 +1,11 @@
 import { Obstetra } from '../../obstetra/entities/obstetra.entity';
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 @Entity('user')
 export class Auth {
@@ -13,5 +19,5 @@ export class Auth {
   password: string;
 
   @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
-  obstetra: Obstetra;
+  obstetra: Relation<Obstetra>;
 }
