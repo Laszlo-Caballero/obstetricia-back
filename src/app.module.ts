@@ -5,6 +5,7 @@ import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { ObstetraModule } from './obstetra/obstetra.module';
 import { EspecialidadModule } from './especialidad/especialidad.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EspecialidadModule } from './especialidad/especialidad.module';
     RedisModule,
     ObstetraModule,
     EspecialidadModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [RedisService],

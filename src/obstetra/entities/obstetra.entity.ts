@@ -1,8 +1,10 @@
+import { Auth } from '../../auth/entities/auth.entity';
 import { Especialidad } from '../../especialidad/entities/especialidad.entity';
 import {
   Column,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
@@ -23,4 +25,7 @@ export class Obstetra {
 
   @ManyToOne(() => Especialidad, (especialidad) => especialidad.obstetras)
   especialidad: Relation<Especialidad>;
+
+  @OneToOne(() => Auth, (auth) => auth.obstetra)
+  user: Auth;
 }
