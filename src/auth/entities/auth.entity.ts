@@ -1,7 +1,9 @@
+import { Roles } from '../../role/entities/roles.entity';
 import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
@@ -20,4 +22,7 @@ export class Auth {
 
   @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
   obstetra: Relation<Obstetra>;
+
+  @ManyToOne(() => Roles, (role) => role.users)
+  role: Relation<Roles>;
 }
