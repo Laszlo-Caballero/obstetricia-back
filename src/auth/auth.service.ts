@@ -113,7 +113,11 @@ export class AuthService {
       role: findRole,
     });
 
-    await this.authRepository.save(newAdmin);
+    await this.authRepository.insert(newAdmin);
+
+    await this.obstetraRepository.update(newObstetra.obstetraId, {
+      user: newAdmin,
+    });
 
     const payload = {
       user: newAdmin.user,

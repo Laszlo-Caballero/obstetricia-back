@@ -3,6 +3,7 @@ import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -21,6 +22,7 @@ export class Auth {
   password: string;
 
   @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
+  @JoinColumn()
   obstetra: Relation<Obstetra>;
 
   @ManyToOne(() => Roles, (role) => role.users)
