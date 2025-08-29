@@ -1,5 +1,5 @@
+import { Enfermera } from 'src/enfermeras/entities/enfermera.entity';
 import { Obstetra } from 'src/obstetra/entities/obstetra.entity';
-import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -19,9 +19,12 @@ export class Posta {
   @Column({ default: true })
   estado: boolean;
 
-  @OneToMany(() => Enfermera, (enfermera) => enfermera.especialidad)
-  enfermeras: Enfermera[];
+  //   @OneToMany(() => Programa, (programa) => programa.posta)
+  //   programas: Programa[];
 
-  @OneToMany(() => Obstetra, (obstetra) => obstetra.especialidad)
+  @OneToMany(() => Obstetra, (obstetra) => obstetra.posta)
   obstetras: Obstetra[];
+
+  @OneToMany(() => Enfermera, (enfermera) => enfermera.posta)
+  enfermeras: Enfermera[];
 }

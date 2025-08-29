@@ -1,5 +1,4 @@
 import { Auth } from '../../auth/entities/auth.entity';
-import { Especialidad } from '../../especialidad/entities/especialidad.entity';
 import { Posta } from '../../posta/entities/posta.entity';
 import { Turno } from '../../turnos/entities/turno.entity';
 import { Cita } from '../../cita/entities/cita.entity';
@@ -12,6 +11,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @Entity()
 export class Enfermera {
@@ -39,8 +39,8 @@ export class Enfermera {
   @OneToMany(() => Cita, (cita) => cita.enfermera)
   citas: Cita[];
 
-  @ManyToOne(() => Especialidad, (especialidad) => especialidad.enfermeras)
-  especialidad: Especialidad;
+  @ManyToOne(() => Programa, (programa) => programa.enfermeras)
+  programa: Programa;
 
   @ManyToOne(() => Posta, (posta) => posta.enfermeras)
   posta: Posta;

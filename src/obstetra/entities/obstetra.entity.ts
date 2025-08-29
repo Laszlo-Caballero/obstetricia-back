@@ -1,5 +1,4 @@
 import { Auth } from '../../auth/entities/auth.entity';
-import { Especialidad } from '../../especialidad/entities/especialidad.entity';
 import { Posta } from '../../posta/entities/posta.entity';
 import { Turno } from '../../turnos/entities/turno.entity';
 import { Cita } from '../../cita/entities/cita.entity';
@@ -13,6 +12,7 @@ import {
   Relation,
   OneToMany,
 } from 'typeorm';
+import { Programa } from 'src/programa/entities/programa.entity';
 
 @Entity()
 export class Obstetra {
@@ -37,8 +37,8 @@ export class Obstetra {
   @OneToMany(() => Cita, (cita) => cita.obstetra)
   citas: Cita[];
 
-  @ManyToOne(() => Especialidad, (especialidad) => especialidad.obstetras)
-  especialidad: Relation<Especialidad>;
+  @ManyToOne(() => Programa, (programa) => programa.obstetras)
+  programa: Relation<Programa>;
 
   @ManyToOne(() => Posta, (posta) => posta.obstetras)
   posta: Posta;
