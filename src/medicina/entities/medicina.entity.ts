@@ -1,4 +1,4 @@
-import { Receta } from 'src/receta/entities/receta.entity';
+import { Receta } from '../../receta/entities/receta.entity';
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

@@ -1,5 +1,5 @@
-import { Enfermera } from 'src/enfermeras/entities/enfermera.entity';
-import { Obstetra } from 'src/obstetra/entities/obstetra.entity';
+import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
+import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

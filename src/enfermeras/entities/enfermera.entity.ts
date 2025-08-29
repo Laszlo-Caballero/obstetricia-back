@@ -10,8 +10,9 @@ import {
   Relation,
   ManyToOne,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
-import { Programa } from 'src/programa/entities/programa.entity';
+import { Programa } from '../../programa/entities/programa.entity';
 
 @Entity()
 export class Enfermera {
@@ -34,6 +35,7 @@ export class Enfermera {
   estado: boolean;
 
   @OneToOne(() => Auth, (auth) => auth.enfermera)
+  @JoinColumn()
   user: Relation<Auth>;
 
   @OneToMany(() => Cita, (cita) => cita.enfermera)

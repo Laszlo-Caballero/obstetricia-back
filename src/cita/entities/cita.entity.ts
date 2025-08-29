@@ -9,10 +9,10 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
   ManyToMany,
-  JoinColumn,
   ManyToOne,
+  JoinTable,
 } from 'typeorm';
-import { PruebaLaboratorio } from 'src/prueba-laboratorio/entities/prueba-laboratorio.entity';
+import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 
 @Entity()
 export class Cita {
@@ -32,13 +32,13 @@ export class Cita {
   obstetra: Obstetra;
 
   @ManyToMany(() => PruebaLaboratorio, (laboratorio) => laboratorio.cita)
-  @JoinColumn({
+  @JoinTable({
     name: 'laboratorio-cita',
   })
   laboratorios: PruebaLaboratorio[];
 
   @ManyToMany(() => Diagnostico, (diagnostico) => diagnostico.cita)
-  @JoinColumn({
+  @JoinTable({
     name: 'diagnostico-cita',
   })
   diagnosticos: Diagnostico[];

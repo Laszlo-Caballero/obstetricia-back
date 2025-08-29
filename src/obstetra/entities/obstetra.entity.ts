@@ -12,7 +12,7 @@ import {
   Relation,
   OneToMany,
 } from 'typeorm';
-import { Programa } from 'src/programa/entities/programa.entity';
+import { Programa } from '../../programa/entities/programa.entity';
 
 @Entity()
 export class Obstetra {

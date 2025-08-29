@@ -1,8 +1,9 @@
-import { Cita } from 'src/cita/entities/cita.entity';
-import { Medicina } from 'src/medicina/entities/medicina.entity';
+import { Cita } from '../../cita/entities/cita.entity';
+import { Medicina } from '../../medicina/entities/medicina.entity';
 import {
   Entity,
   JoinColumn,
+  JoinTable,
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,11 +15,12 @@ export class Receta {
   recetaId: number;
 
   @ManyToMany(() => Medicina, (medicina) => medicina.receta)
-  @JoinColumn({
+  @JoinTable({
     name: 'medicamentos-receta',
   })
   medicamentos: Medicina[];
 
   @OneToOne(() => Cita, (cita) => cita.receta)
+  @JoinColumn()
   cita: Cita;
 }
