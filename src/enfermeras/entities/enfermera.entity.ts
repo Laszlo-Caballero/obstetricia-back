@@ -3,21 +3,20 @@ import { Especialidad } from '../../especialidad/entities/especialidad.entity';
 import { Posta } from '../../posta/entities/posta.entity';
 import { Turno } from '../../turnos/entities/turno.entity';
 import { Cita } from '../../cita/entities/cita.entity';
-
 import {
   Column,
   Entity,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
+  ManyToOne,
   OneToMany,
 } from 'typeorm';
 
 @Entity()
-export class Obstetra {
+export class Enfermera {
   @PrimaryGeneratedColumn()
-  obstetraId: number;
+  enfermeraId: number;
 
   @Column()
   nombre: string;
@@ -29,23 +28,23 @@ export class Obstetra {
   apellido_materno: string;
 
   @Column()
-  cop: string;
+  cep: string;
 
-  @Column()
-  titulo: string;
+  @Column({ default: true })
+  estado: boolean;
 
-  @OneToMany(() => Cita, (cita) => cita.obstetra)
+  @OneToOne(() => Auth, (auth) => auth.enfermera)
+  user: Relation<Auth>;
+
+  @OneToMany(() => Cita, (cita) => cita.enfermera)
   citas: Cita[];
 
-  @ManyToOne(() => Especialidad, (especialidad) => especialidad.obstetras)
-  especialidad: Relation<Especialidad>;
+  @ManyToOne(() => Especialidad, (especialidad) => especialidad.enfermeras)
+  especialidad: Especialidad;
 
-  @ManyToOne(() => Posta, (posta) => posta.obstetras)
+  @ManyToOne(() => Posta, (posta) => posta.enfermeras)
   posta: Posta;
 
-  @ManyToOne(() => Turno, (turno) => turno.obstetras)
+  @ManyToOne(() => Turno, (turno) => turno.enfermeras)
   turno: Turno;
-
-  @OneToOne(() => Auth, (auth) => auth.obstetra)
-  user: Auth;
 }

@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 
 @Entity('user')
 export class Auth {
@@ -24,6 +25,9 @@ export class Auth {
   @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
   @JoinColumn()
   obstetra: Relation<Obstetra>;
+
+  @OneToOne(() => Enfermera, (enfermera) => enfermera.user)
+  enfermera: Enfermera;
 
   @ManyToOne(() => Roles, (role) => role.users)
   role: Relation<Roles>;

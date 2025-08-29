@@ -7,6 +7,16 @@ import { ObstetraModule } from './obstetra/obstetra.module';
 import { EspecialidadModule } from './especialidad/especialidad.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
+import { EnfermerasModule } from './enfermeras/enfermeras.module';
+import { TurnosModule } from './turnos/turnos.module';
+import { PostaModule } from './posta/posta.module';
+import { CitaModule } from './cita/cita.module';
+import { PacientesModule } from './pacientes/pacientes.module';
+import { PruebaLaboratorioModule } from './prueba-laboratorio/prueba-laboratorio.module';
+import { RecetaModule } from './receta/receta.module';
+import { MedicinaModule } from './medicina/medicina.module';
+import { DiagnosticoModule } from './diagnostico/diagnostico.module';
+import { TipoPruebaModule } from './tipo-prueba/tipo-prueba.module';
 
 @Module({
   imports: [
@@ -31,6 +41,16 @@ import { RoleModule } from './role/role.module';
     EspecialidadModule,
     AuthModule,
     RoleModule,
+    EnfermerasModule,
+    TurnosModule,
+    PostaModule,
+    CitaModule,
+    PacientesModule,
+    PruebaLaboratorioModule,
+    RecetaModule,
+    MedicinaModule,
+    DiagnosticoModule,
+    TipoPruebaModule,
   ],
   controllers: [],
   providers: [RedisService],
