@@ -8,6 +8,7 @@ import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { Roles } from 'src/role/entities/roles.entity';
+import { SetRoleDto } from './dto/setRole.dto';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +41,11 @@ export class AuthService {
       obstetra: findObstetra,
       user: createAuthDto.user,
     });
-    await this.authRepository.save(newAuth);
+    await this.authRepository.insert(newAuth);
+
+    await this.obstetraRepository.update(findObstetra.obstetraId, {
+      user: newAuth,
+    });
 
     const payload = { user: newAuth.user, role: '' };
 
@@ -84,6 +89,43 @@ export class AuthService {
       message: 'Login successful',
       data: foundUser,
       token,
+    };
+  }
+
+  async setRole(setRoleDto: SetRoleDto) {
+    const { obstetraId, roleId } = setRoleDto;
+
+    const findObstetra = await this.obstetraRepository.findOne({
+      where: { obstetraId: obstetraId },
+      relations: ['user'],
+    });
+
+    if (!findObstetra) {
+      throw new HttpException('Obstetra not found', 404);
+    }
+
+    console.log(findObstetra);
+
+    const findRole = await this.rolesRepository.findOne({
+      where: { roleId: roleId },
+    });
+
+    if (!findRole) {
+      throw new HttpException('Role not found', 404);
+    }
+
+    if (!findObstetra.user) {
+      throw new HttpException('Obstetra has no associated user', 404);
+    }
+
+    await this.authRepository.update(findObstetra.user.userId, {
+      role: findRole,
+    });
+
+    return {
+      status: 200,
+      message: 'Role updated successfully',
+      data: null,
     };
   }
 

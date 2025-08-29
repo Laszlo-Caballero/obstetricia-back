@@ -35,6 +35,9 @@ export class Obstetra {
   @Column()
   titulo: string;
 
+  @Column({ default: true })
+  estado: boolean;
+
   @OneToMany(() => Cita, (cita) => cita.obstetra)
   citas: Cita[];
 
