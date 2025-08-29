@@ -45,7 +45,7 @@ export class Enfermera {
   programa: Programa;
 
   @ManyToOne(() => Posta, (posta) => posta.enfermeras)
-  posta: Posta;
+  posta: Relation<Posta>;
 
   @ManyToOne(() => Turno, (turno) => turno.enfermeras)
   turno: Turno;

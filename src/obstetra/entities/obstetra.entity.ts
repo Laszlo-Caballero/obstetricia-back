@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { Programa } from '../../programa/entities/programa.entity';
 
@@ -47,5 +48,6 @@ export class Obstetra {
   turno: Turno;
 
   @OneToOne(() => Auth, (auth) => auth.obstetra)
-  user: Auth;
+  @JoinColumn()
+  user: Relation<Auth>;
 }

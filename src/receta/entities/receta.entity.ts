@@ -7,6 +7,7 @@ import {
   ManyToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 
 @Entity()
@@ -22,5 +23,5 @@ export class Receta {
 
   @OneToOne(() => Cita, (cita) => cita.receta)
   @JoinColumn()
-  cita: Cita;
+  cita: Relation<Cita>;
 }

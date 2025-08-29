@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
 import { ObstetraModule } from './obstetra/obstetra.module';
-import { EspecialidadModule } from './especialidad/especialidad.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
 import { EnfermerasModule } from './enfermeras/enfermeras.module';
@@ -16,7 +15,6 @@ import { PruebaLaboratorioModule } from './prueba-laboratorio/prueba-laboratorio
 import { RecetaModule } from './receta/receta.module';
 import { MedicinaModule } from './medicina/medicina.module';
 import { DiagnosticoModule } from './diagnostico/diagnostico.module';
-import { TipoPruebaModule } from './tipo-prueba/tipo-prueba.module';
 import { ProgramaModule } from './programa/programa.module';
 
 @Module({
@@ -39,7 +37,6 @@ import { ProgramaModule } from './programa/programa.module';
     }),
     RedisModule,
     ObstetraModule,
-    EspecialidadModule,
     AuthModule,
     RoleModule,
     EnfermerasModule,
@@ -51,7 +48,6 @@ import { ProgramaModule } from './programa/programa.module';
     RecetaModule,
     MedicinaModule,
     DiagnosticoModule,
-    TipoPruebaModule,
     ProgramaModule,
   ],
   controllers: [],

@@ -11,6 +11,7 @@ import {
   ManyToMany,
   ManyToOne,
   JoinTable,
+  Relation,
 } from 'typeorm';
 import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 
@@ -23,13 +24,13 @@ export class Cita {
   receta: Receta;
 
   @ManyToOne(() => Enfermera, (enfermera) => enfermera.citas)
-  enfermera: Enfermera;
+  enfermera: Relation<Enfermera>;
 
   @ManyToOne(() => Paciente, (paciente) => paciente.citas)
   paciente: Paciente;
 
   @ManyToOne(() => Obstetra, (obstetra) => obstetra.citas)
-  obstetra: Obstetra;
+  obstetra: Relation<Obstetra>;
 
   @ManyToMany(() => PruebaLaboratorio, (laboratorio) => laboratorio.cita)
   @JoinTable({

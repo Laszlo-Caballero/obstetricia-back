@@ -92,6 +92,8 @@ export class AuthService {
       apellido_materno: 'Admin',
       apellido_paterno: 'Admin',
       nombre: 'Admin',
+      cop: '0000',
+      titulo: 'Administrador',
     });
 
     await this.obstetraRepository.insert(newObstetra);
