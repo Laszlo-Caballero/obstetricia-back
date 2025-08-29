@@ -22,6 +22,9 @@ export class Posta {
   @Column()
   lng: number;
 
+  @Column()
+  capacidad: number;
+
   @Column({ default: true })
   estado: boolean;
 

@@ -20,4 +20,8 @@ export class CreatePostaDto {
   @IsNumber()
   @IsLatLong()
   lng: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  capacidad: number;
 }
