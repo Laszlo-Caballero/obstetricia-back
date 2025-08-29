@@ -17,6 +17,7 @@ import { RecetaModule } from './receta/receta.module';
 import { MedicinaModule } from './medicina/medicina.module';
 import { DiagnosticoModule } from './diagnostico/diagnostico.module';
 import { TipoPruebaModule } from './tipo-prueba/tipo-prueba.module';
+import { ProgramaModule } from './programa/programa.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { TipoPruebaModule } from './tipo-prueba/tipo-prueba.module';
     MedicinaModule,
     DiagnosticoModule,
     TipoPruebaModule,
+    ProgramaModule,
   ],
   controllers: [],
   providers: [RedisService],
