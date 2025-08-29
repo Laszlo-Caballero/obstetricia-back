@@ -16,6 +16,12 @@ export class Posta {
   @Column()
   ipress: string;
 
+  @Column()
+  lat: number;
+
+  @Column()
+  lng: number;
+
   @Column({ default: true })
   estado: boolean;
 
