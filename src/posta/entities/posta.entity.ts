@@ -17,10 +17,10 @@ export class Posta {
   ipress: string;
 
   @Column()
-  lat: number;
+  lat: string;
 
   @Column()
-  lng: number;
+  lng: string;
 
   @Column()
   capacidad: number;

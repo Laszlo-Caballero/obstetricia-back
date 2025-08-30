@@ -1,4 +1,10 @@
-import { IsLatLong, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsLatitude,
+  IsLongitude,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreatePostaDto {
   @IsString()
@@ -13,13 +19,11 @@ export class CreatePostaDto {
   @IsNotEmpty()
   ipress: string;
 
-  @IsNumber()
-  @IsLatLong()
-  lat: number;
+  @IsLatitude()
+  lat: string;
 
-  @IsNumber()
-  @IsLatLong()
-  lng: number;
+  @IsLongitude()
+  lng: string;
 
   @IsNumber()
   @IsNotEmpty()
