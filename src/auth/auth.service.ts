@@ -104,8 +104,6 @@ export class AuthService {
       throw new HttpException('Obstetra not found', 404);
     }
 
-    console.log(findObstetra);
-
     const findRole = await this.rolesRepository.findOne({
       where: { roleId: roleId },
     });
