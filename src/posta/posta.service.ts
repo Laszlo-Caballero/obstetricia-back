@@ -6,6 +6,7 @@ import { Posta } from './entities/posta.entity';
 import { Repository } from 'typeorm';
 import { RedisService } from 'src/redis/redis.service';
 import { Workbook } from 'exceljs';
+import { Region } from './entities/region.entity';
 
 @Injectable()
 export class PostaService {
@@ -14,15 +15,30 @@ export class PostaService {
   constructor(
     @InjectRepository(Posta)
     private readonly postaRepository: Repository<Posta>,
+    @InjectRepository(Region)
+    private readonly regionRepository: Repository<Region>,
     private readonly redisService: RedisService,
   ) {}
 
   async create(createPostaDto: CreatePostaDto) {
-    const posta = this.postaRepository.create(createPostaDto);
+    const { regionId, ...rest } = createPostaDto;
+
+    const findRegion = await this.regionRepository.findOneBy({ regionId });
+
+    if (!findRegion) {
+      throw new HttpException('Region not found', 404);
+    }
+
+    const posta = this.postaRepository.create({
+      ...rest,
+      region: findRegion,
+    });
 
     await this.postaRepository.insert(posta);
 
-    const allPosta = await this.postaRepository.find();
+    const allPosta = await this.postaRepository.find({
+      relations: ['region'],
+    });
 
     await this.redisService.set(this.postaKey, allPosta);
 
@@ -44,7 +60,9 @@ export class PostaService {
       };
     }
 
-    const dbPosta = await this.postaRepository.find();
+    const dbPosta = await this.postaRepository.find({
+      relations: ['region'],
+    });
 
     await this.redisService.set(this.postaKey, dbPosta);
 

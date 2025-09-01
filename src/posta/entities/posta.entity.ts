@@ -1,6 +1,13 @@
 import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 import { Obstetra } from '../../obstetra/entities/obstetra.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Region } from './region.entity';
 
 @Entity()
 export class Posta {
@@ -36,4 +43,7 @@ export class Posta {
 
   @OneToMany(() => Enfermera, (enfermera) => enfermera.posta)
   enfermeras: Enfermera[];
+
+  @ManyToOne(() => Region, (region) => region.postas)
+  region: Region;
 }

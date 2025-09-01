@@ -28,4 +28,8 @@ export class CreatePostaDto {
   @IsNumber()
   @IsNotEmpty()
   capacidad: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  regionId: number;
 }
