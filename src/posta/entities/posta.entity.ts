@@ -3,6 +3,7 @@ import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -45,5 +46,6 @@ export class Posta {
   enfermeras: Enfermera[];
 
   @ManyToOne(() => Region, (region) => region.postas)
+  @JoinColumn({ name: 'regionId' })
   region: Region;
 }

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Res,
+  Query,
 } from '@nestjs/common';
 import { PostaService } from './posta.service';
 import { CreatePostaDto } from './dto/create-posta.dto';
@@ -25,8 +26,14 @@ export class PostaController {
   }
 
   @Get()
-  findAll() {
-    return this.postaService.findAll();
+  findAll(
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
+    @Query('regionId') regionId?: number,
+    @Query('status') status?: boolean,
+    @Query('search') search?: string,
+  ) {
+    return this.postaService.findAll(limit, page, regionId, status, search);
   }
 
   // @Auth(RolesEnum.Administrador)

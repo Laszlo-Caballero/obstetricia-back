@@ -3,8 +3,7 @@ import { CreatePostaDto } from './dto/create-posta.dto';
 import { UpdatePostaDto } from './dto/update-posta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Posta } from './entities/posta.entity';
-import { Repository } from 'typeorm';
-import { RedisService } from 'src/redis/redis.service';
+import { Repository, Like } from 'typeorm';
 import { Workbook } from 'exceljs';
 import { Region } from './entities/region.entity';
 
@@ -17,7 +16,6 @@ export class PostaService {
     private readonly postaRepository: Repository<Posta>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
-    private readonly redisService: RedisService,
   ) {}
 
   async create(createPostaDto: CreatePostaDto) {
@@ -36,40 +34,40 @@ export class PostaService {
 
     await this.postaRepository.insert(posta);
 
-    const allPosta = await this.postaRepository.find({
-      relations: ['region'],
-    });
-
-    await this.redisService.set(this.postaKey, allPosta);
-
     return {
       status: 200,
       message: 'Post created successfully',
-      data: allPosta,
+      data: posta,
     };
   }
 
-  async findAll() {
-    const allPosta = await this.redisService.get<Posta[]>(this.postaKey);
-
-    if (allPosta) {
-      return {
-        status: 200,
-        message: 'Post retrieved successfully from cache',
-        data: allPosta,
-      };
-    }
-
-    const dbPosta = await this.postaRepository.find({
+  async findAll(
+    limit: number = 10,
+    page: number = 1,
+    regionId?: number,
+    status?: boolean,
+    search?: string,
+  ) {
+    const [dbPosta, totalItems] = await this.postaRepository.findAndCount({
       relations: ['region'],
+      take: limit,
+      skip: (page - 1) * limit,
+      where: {
+        ...(regionId && { region: { regionId } }),
+        ...(status !== undefined && { estado: status }),
+        ...(search && { nombre: Like(`%${search}%`) }),
+      },
     });
-
-    await this.redisService.set(this.postaKey, dbPosta);
 
     return {
       status: 200,
       message: 'Post retrieved successfully from database',
       data: dbPosta,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+      },
     };
   }
 
@@ -96,14 +94,10 @@ export class PostaService {
 
     await this.postaRepository.update(id, updatePostaDto);
 
-    const allPosta = await this.postaRepository.find();
-
-    await this.redisService.set(this.postaKey, allPosta);
-
     return {
       status: 200,
       message: 'Post updated successfully',
-      data: allPosta,
+      data: null,
     };
   }
 
@@ -116,14 +110,10 @@ export class PostaService {
 
     await this.postaRepository.update(id, { estado: false });
 
-    const allPosta = await this.postaRepository.find();
-
-    await this.redisService.set(this.postaKey, allPosta);
-
     return {
       status: 200,
       message: 'Post removed successfully',
-      data: allPosta,
+      data: null,
     };
   }
 
