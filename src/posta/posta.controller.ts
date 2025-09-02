@@ -47,6 +47,11 @@ export class PostaController {
     res.send(buffer);
   }
 
+  @Get('raw-postas')
+  getRawPostas() {
+    return this.postaService.rawPostas();
+  }
+
   // @Auth(RolesEnum.Administrador)
   @Get(':id')
   findOne(@Param('id') id: string) {
