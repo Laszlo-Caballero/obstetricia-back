@@ -5,11 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
 import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
+import { Consulta } from '../../ayuda/consulta/entities/consulta.entity';
 
 @Entity('user')
 export class Auth {
@@ -28,6 +30,9 @@ export class Auth {
 
   @OneToOne(() => Enfermera, (enfermera) => enfermera.user)
   enfermera: Enfermera;
+
+  @OneToMany(() => Consulta, (consulta) => consulta.user)
+  consultas: Consulta[];
 
   @ManyToOne(() => Roles, (role) => role.users)
   role: Relation<Roles>;

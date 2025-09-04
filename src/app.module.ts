@@ -17,6 +17,12 @@ import { MedicinaModule } from './medicina/medicina.module';
 import { DiagnosticoModule } from './diagnostico/diagnostico.module';
 import { ProgramaModule } from './programa/programa.module';
 import { UtilsModule } from './utils/utils.module';
+import { ModuloModule } from './ayuda/modulo/modulo.module';
+import { PrioridadModule } from './ayuda/prioridad/prioridad.module';
+import { TipoConsultaModule } from './ayuda/tipo-consulta/tipo-consulta.module';
+import { ConsultaModule } from './ayuda/consulta/consulta.module';
+
+
 
 @Module({
   imports: [
@@ -51,6 +57,11 @@ import { UtilsModule } from './utils/utils.module';
     DiagnosticoModule,
     ProgramaModule,
     UtilsModule,
+    ModuloModule,
+    PrioridadModule,
+    TipoConsultaModule,
+    ConsultaModule,
+   
   ],
   controllers: [],
   providers: [RedisService],
