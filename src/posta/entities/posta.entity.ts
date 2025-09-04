@@ -16,6 +16,9 @@ import { Distrito } from './distrito.entity';
 export class Posta {
   @PrimaryGeneratedColumn()
   postaId: number;
+  //TODO: QUITAR EL DEFALUT
+  @Column({ default: '00000000000' })
+  ruc: string;
 
   @Column()
   nombre: string;
@@ -31,9 +34,19 @@ export class Posta {
 
   @Column()
   lng: string;
+  //TODO: QUITAR EL DEFALUT
+  @Column({ default: '0' })
+  altitud: string;
 
   @Column()
   capacidad: number;
+
+  //TODO: QUITAR EL nullable
+  @Column({ type: 'date', nullable: true })
+  fechaInicioActividad: Date;
+
+  @Column({ type: 'date', default: () => 'GETDATE()' })
+  fechaCreacion: Date;
 
   @Column({ default: true })
   estado: boolean;

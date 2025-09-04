@@ -1,39 +1,34 @@
-import {
-    IsNotEmpty,
-    IsNumber,
-    IsString,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateConsultaDto {
-    @IsString()
-    @IsNotEmpty()
-    asunto: string;
+  @IsString()
+  @IsNotEmpty()
+  asunto: string;
 
-    @IsString()
-    @IsNotEmpty()
-    descripcion: string;
+  @IsString()
+  @IsNotEmpty()
+  descripcion: string;
 
-    @IsString()
-    @IsNotEmpty()
-    correo: string;
+  @IsEmail()
+  correo: string;
 
-    @IsString()
-    @IsNotEmpty()
-    telefono: string;
+  @IsString()
+  @IsNotEmpty()
+  telefono: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    moduloId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  moduloId: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    tipoId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  tipoId: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    prioridadId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  prioridadId: number;
 
-    @IsNumber()
-    @IsNotEmpty()
-    userId: number;
+  @IsNumber()
+  @IsNotEmpty()
+  userId: number;
 }

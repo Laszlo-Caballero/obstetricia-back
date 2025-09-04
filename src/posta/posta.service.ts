@@ -7,6 +7,10 @@ import { Repository, Like } from 'typeorm';
 import { Workbook } from 'exceljs';
 import { Region } from './entities/region.entity';
 import { RedisService } from 'src/redis/redis.service';
+import { Provincia } from './entities/provincia.entity';
+import { Distrito } from './entities/distrito.entity';
+import { PostaType } from './type/type';
+import { parse } from 'date-fns';
 
 @Injectable()
 export class PostaService {
@@ -17,6 +21,10 @@ export class PostaService {
     private readonly postaRepository: Repository<Posta>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @InjectRepository(Provincia)
+    private readonly provinciaRepository: Repository<Provincia>,
+    @InjectRepository(Distrito)
+    private readonly distritoRepository: Repository<Distrito>,
     private readonly redisService: RedisService,
   ) {}
 
@@ -46,6 +54,114 @@ export class PostaService {
     };
   }
 
+  async importExcel(file: Express.Multer.File) {
+    const workbook = new Workbook();
+
+    // @ts-expect-error: exceljs types do not recognize Buffer input for load method
+    await workbook.xlsx.load(Buffer.from(file.buffer));
+
+    const worksheet = workbook.getWorksheet(1);
+
+    const data: PostaType[] = [];
+
+    worksheet?.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const ipress = row.getCell(1).text;
+      const ruc = row.getCell(2).text;
+      const nombre = row.getCell(3).text;
+      const departamentoNombre = row.getCell(4).text;
+      const provinciaNombre = row.getCell(5).text;
+      const distritoNombre = row.getCell(6).text;
+      const lng = row.getCell(7).text;
+      const lat = row.getCell(8).text;
+      const altitud = row.getCell(9).text;
+      const fechaInicioActividad = parse(
+        row.getCell(10).text,
+        'dd/MM/yyyy',
+        new Date(),
+      );
+      const fechaRegistro = parse(
+        row.getCell(11).text,
+        'dd/MM/yyyy',
+        new Date(),
+      );
+
+      if (nombre === 'ACTUALIZAR' || ipress === '') {
+        return;
+      }
+
+      data.push({
+        ipress: ipress || '',
+        nombre: nombre || '',
+        ruc: ruc || '',
+        departamentoNombre: departamentoNombre || '',
+        provinciaNombre: provinciaNombre || '',
+        distritoNombre: distritoNombre || '',
+        lat: lat || '',
+        lng: lng || '',
+        altitud: altitud || '',
+        fechaInicioActividad: fechaInicioActividad || '',
+        fechaRegistro: fechaRegistro || '',
+      });
+    });
+
+    await Promise.all(
+      data.map(async (item) => {
+        const findDepartamento = await this.regionRepository.findOneBy({
+          nombre: Like(`%${item.departamentoNombre}%`),
+        });
+
+        if (!findDepartamento) {
+          return;
+        }
+
+        const findProvincia = await this.provinciaRepository.findOneBy({
+          nombre: Like(`%${item.provinciaNombre}%`),
+        });
+
+        if (!findProvincia) {
+          return;
+        }
+
+        const findDistrito = await this.distritoRepository.findOneBy({
+          nombre: Like(`%${item.distritoNombre}%`),
+        });
+
+        if (!findDistrito) {
+          return;
+        }
+
+        const newPosta = this.postaRepository.create({
+          ipress: item.ipress,
+          ruc: item.ruc,
+          nombre: item.nombre,
+          direccion: '', //TODO:cambiar por que si viene en el excel
+          lat: item.lat,
+          lng: item.lng,
+          altitud: item.altitud,
+          capacidad: 0,
+          fechaInicioActividad: item.fechaInicioActividad,
+          region: findDepartamento,
+          provincia: findProvincia,
+          distrito: findDistrito,
+          fechaCreacion: item.fechaRegistro,
+        });
+
+        await this.postaRepository.insert(newPosta);
+      }),
+    );
+
+    const findAllPosta = await this.postaRepository.find();
+
+    await this.redisService.set('postas', findAllPosta);
+
+    return {
+      status: 200,
+      message: 'File processed successfully',
+      data,
+    };
+  }
+
   async findAll(
     limit: number = 10,
     page: number = 1,
@@ -54,7 +170,7 @@ export class PostaService {
     search?: string,
   ) {
     const [dbPosta, totalItems] = await this.postaRepository.findAndCount({
-      relations: ['region'],
+      relations: ['region', 'provincia', 'distrito'],
       take: limit,
       skip: (page - 1) * limit,
       where: {
@@ -168,8 +284,14 @@ export class PostaService {
     const worksheet = workbook.addWorksheet(fileName);
     worksheet.columns = [
       {
-        header: 'ID',
-        key: 'postaId',
+        header: 'ipress',
+        key: 'ipress',
+        width: 30,
+      },
+      {
+        header: 'RUC',
+        key: 'ruc',
+        width: 30,
       },
       {
         header: 'Nombre Posta',
@@ -201,6 +323,36 @@ export class PostaService {
         key: 'lng',
         width: 20,
       },
+      {
+        header: 'Altitud',
+        key: 'altitud',
+        width: 20,
+      },
+      {
+        header: 'Fecha Inicio Actividad',
+        key: 'fechaInicioActividad',
+        width: 20,
+      },
+      {
+        header: 'Fecha Creacion',
+        key: 'fechaCreacion',
+        width: 20,
+      },
+      {
+        header: 'Region',
+        key: 'region',
+        width: 30,
+      },
+      {
+        header: 'Provincia',
+        key: 'provincia',
+        width: 30,
+      },
+      {
+        header: 'Distrito',
+        key: 'distrito',
+        width: 30,
+      },
     ];
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
@@ -216,17 +368,26 @@ export class PostaService {
       };
     });
 
-    const allPostas = await this.postaRepository.find();
+    const allPostas = await this.postaRepository.find({
+      relations: ['region', 'provincia', 'distrito'],
+    });
 
     allPostas.map((posta) => {
       return worksheet.addRow({
-        postaId: posta.postaId,
+        ipress: posta.ipress,
+        ruc: posta.ruc,
         nombre: posta.nombre,
         capacidad: posta.capacidad,
         estado: posta.estado,
         direccion: posta.direccion,
         lat: posta.lat,
         lng: posta.lng,
+        altitud: posta.altitud,
+        fechaInicioActividad: posta.fechaInicioActividad,
+        fechaCreacion: posta.fechaCreacion,
+        region: posta.region.nombre,
+        provincia: posta.provincia?.nombre,
+        distrito: posta.distrito?.nombre,
       });
     });
 

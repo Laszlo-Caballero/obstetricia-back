@@ -8,10 +8,13 @@ import {
   Delete,
   Res,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { PostaService } from './posta.service';
 import { CreatePostaDto } from './dto/create-posta.dto';
 import { UpdatePostaDto } from './dto/update-posta.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 // import { Auth } from 'src/auth/decorators/auth.decorator';
 // import { RolesEnum } from 'src/auth/enum/roles';
 
@@ -23,6 +26,12 @@ export class PostaController {
   @Post()
   create(@Body() createPostaDto: CreatePostaDto) {
     return this.postaService.create(createPostaDto);
+  }
+
+  @Post('import-excel')
+  @UseInterceptors(FileInterceptor('file'))
+  importExcel(@UploadedFile() file: Express.Multer.File) {
+    return this.postaService.importExcel(file);
   }
 
   @Get()
