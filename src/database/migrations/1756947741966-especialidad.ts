@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Programas1756447694101 implements MigrationInterface {
+export class Especialidad1756947741966 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-    INSERT INTO Programa (nombre, descripcion) VALUES
+    INSERT INTO programa (nombre, descripcion) VALUES
 ('Obstetricia General', 'Atención integral de la mujer durante el embarazo, parto y puerperio.'),
 ('Medicina Materno-Fetal', 'Diagnóstico y manejo de embarazos de alto riesgo y patologías fetales.'),
 ('Ginecología Oncológica', 'Prevención, diagnóstico y tratamiento de cánceres ginecológicos como cuello uterino, ovario y endometrio.'),
@@ -17,6 +17,6 @@ export class Programas1756447694101 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE Programa`);
+    await queryRunner.query(`DROP TABLE programa`);
   }
 }

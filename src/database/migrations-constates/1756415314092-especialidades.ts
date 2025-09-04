@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class Especialidades1756415314092 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-    INSERT INTO Especialidad (nombre, descripcion) VALUES
+    INSERT INTO programa (nombre, descripcion) VALUES
 ('Obstetricia General', 'Atención integral de la mujer durante el embarazo, parto y puerperio.'),
 ('Medicina Materno-Fetal', 'Diagnóstico y manejo de embarazos de alto riesgo y patologías fetales.'),
 ('Ginecología Oncológica', 'Prevención, diagnóstico y tratamiento de cánceres ginecológicos como cuello uterino, ovario y endometrio.'),
@@ -17,6 +17,6 @@ export class Especialidades1756415314092 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE especialidad`);
+    await queryRunner.query(`DROP TABLE programa`);
   }
 }

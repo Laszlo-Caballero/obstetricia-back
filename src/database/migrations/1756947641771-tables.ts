@@ -1,11 +1,10 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Tables1756445635468 implements MigrationInterface {
-    name = 'Tables1756445635468'
+export class Tables1756947641771 implements MigrationInterface {
+    name = 'Tables1756947641771'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "roles" ("roleId" int NOT NULL IDENTITY(1,1), "roleName" nvarchar(255) NOT NULL, CONSTRAINT "PK_39bf7e8af8fe54d9d1c7a8efe6f" PRIMARY KEY ("roleId"))`);
-        await queryRunner.query(`CREATE TABLE "posta" ("postaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "direccion" nvarchar(255) NOT NULL, "ipress" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_647150341d7afbbaaa6661bb626" DEFAULT 1, CONSTRAINT "PK_0d223ba2148f382a26e2a257918" PRIMARY KEY ("postaId"))`);
+        await queryRunner.query(`CREATE TABLE "turno" ("turnoId" int NOT NULL IDENTITY(1,1), "horaInicio" nvarchar(255) NOT NULL, "horaFin" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_651fcd44931b6c4cfe3963e0d94" DEFAULT 1, CONSTRAINT "PK_89357c84389a375aeae8cfddc54" PRIMARY KEY ("turnoId"))`);
         await queryRunner.query(`CREATE TABLE "medicina" ("medicinaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "descripcion" nvarchar(255) NOT NULL, "stock" int NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_06abac2071062d79df8bb58df34" DEFAULT 1, CONSTRAINT "PK_fadeab264d7970c3bfc78675b90" PRIMARY KEY ("medicinaId"))`);
         await queryRunner.query(`CREATE TABLE "receta" ("recetaId" int NOT NULL IDENTITY(1,1), "citaCitaId" int, CONSTRAINT "PK_f71252cfea71920bc8c30a5b7cc" PRIMARY KEY ("recetaId"))`);
         await queryRunner.query(`CREATE UNIQUE INDEX "REL_b031ce59876450762499f88360" ON "receta" ("citaCitaId") WHERE "citaCitaId" IS NOT NULL`);
@@ -14,12 +13,17 @@ export class Tables1756445635468 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "prueba_laboratorio" ("pruebaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_35ee3df327be25e45784a4caebe" DEFAULT 1, CONSTRAINT "PK_684019cdea2581c49f79997dceb" PRIMARY KEY ("pruebaId"))`);
         await queryRunner.query(`CREATE TABLE "cita" ("citaId" int NOT NULL IDENTITY(1,1), "enfermeraEnfermeraId" int, "pacientePacienteId" int, "obstetraObstetraId" int, CONSTRAINT "PK_2e65f3ada2c38a48241a056dc9d" PRIMARY KEY ("citaId"))`);
         await queryRunner.query(`CREATE TABLE "programa" ("programaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "descripcion" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_c3deee8bbde16c363c23c55b1cf" DEFAULT 1, CONSTRAINT "PK_e031c40af6c3b20f59a0b9d21a5" PRIMARY KEY ("programaId"))`);
-        await queryRunner.query(`CREATE TABLE "obstetra" ("obstetraId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "apellido_paterno" nvarchar(255) NOT NULL, "apellido_materno" nvarchar(255) NOT NULL, "cop" nvarchar(255) NOT NULL, "titulo" nvarchar(255) NOT NULL, "programaProgramaId" int, "postaPostaId" int, "turnoTurnoId" int, CONSTRAINT "PK_f0cbe80b69141054f00f5c15e6c" PRIMARY KEY ("obstetraId"))`);
-        await queryRunner.query(`CREATE TABLE "user" ("userId" int NOT NULL IDENTITY(1,1), "user" nvarchar(255) NOT NULL, "password" nvarchar(255) NOT NULL, "obstetraObstetraId" int, "roleRoleId" int, CONSTRAINT "PK_d72ea127f30e21753c9e229891e" PRIMARY KEY ("userId"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "REL_067997007d82c709b7efa6a0bc" ON "user" ("obstetraObstetraId") WHERE "obstetraObstetraId" IS NOT NULL`);
         await queryRunner.query(`CREATE TABLE "enfermera" ("enfermeraId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "apellido_paterno" nvarchar(255) NOT NULL, "apellido_materno" nvarchar(255) NOT NULL, "cep" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_4f4c76b647c535ab6a0eb9c26ed" DEFAULT 1, "userUserId" int, "programaProgramaId" int, "postaPostaId" int, "turnoTurnoId" int, CONSTRAINT "PK_4dc00194e27c12897b4b9f3922b" PRIMARY KEY ("enfermeraId"))`);
         await queryRunner.query(`CREATE UNIQUE INDEX "REL_8a38099afdf58d65cedfb2f44c" ON "enfermera" ("userUserId") WHERE "userUserId" IS NOT NULL`);
-        await queryRunner.query(`CREATE TABLE "turno" ("turnoId" int NOT NULL IDENTITY(1,1), "horaInicio" nvarchar(255) NOT NULL, "horaFin" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_651fcd44931b6c4cfe3963e0d94" DEFAULT 1, CONSTRAINT "PK_89357c84389a375aeae8cfddc54" PRIMARY KEY ("turnoId"))`);
+        await queryRunner.query(`CREATE TABLE "distrito" ("distritoId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "provinciaProvinciaId" int, CONSTRAINT "PK_67405cc391a1f5d6ec686a5644f" PRIMARY KEY ("distritoId"))`);
+        await queryRunner.query(`CREATE TABLE "provincia" ("provinciaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "regionRegionId" int, CONSTRAINT "PK_022d32a2ceb17ac0169490d427f" PRIMARY KEY ("provinciaId"))`);
+        await queryRunner.query(`CREATE TABLE "region" ("regionId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, CONSTRAINT "PK_cb65449537268bed2e491f862ce" PRIMARY KEY ("regionId"))`);
+        await queryRunner.query(`CREATE TABLE "posta" ("postaId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "direccion" nvarchar(255) NOT NULL, "ipress" nvarchar(255) NOT NULL, "lat" nvarchar(255) NOT NULL, "lng" nvarchar(255) NOT NULL, "capacidad" int NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_647150341d7afbbaaa6661bb626" DEFAULT 1, "regionId" int, "provinciaId" int, "distritoId" int, CONSTRAINT "PK_0d223ba2148f382a26e2a257918" PRIMARY KEY ("postaId"))`);
+        await queryRunner.query(`CREATE TABLE "obstetra" ("obstetraId" int NOT NULL IDENTITY(1,1), "nombre" nvarchar(255) NOT NULL, "apellido_paterno" nvarchar(255) NOT NULL, "apellido_materno" nvarchar(255) NOT NULL, "cop" nvarchar(255) NOT NULL, "titulo" nvarchar(255) NOT NULL, "estado" bit NOT NULL CONSTRAINT "DF_369fee1e1e620ae83c9711eef2e" DEFAULT 1, "programaProgramaId" int, "postaPostaId" int, "turnoTurnoId" int, "userUserId" int, CONSTRAINT "PK_f0cbe80b69141054f00f5c15e6c" PRIMARY KEY ("obstetraId"))`);
+        await queryRunner.query(`CREATE UNIQUE INDEX "REL_f1b790eb1d89e716b809243d49" ON "obstetra" ("userUserId") WHERE "userUserId" IS NOT NULL`);
+        await queryRunner.query(`CREATE TABLE "user" ("userId" int NOT NULL IDENTITY(1,1), "user" nvarchar(255) NOT NULL, "password" nvarchar(255) NOT NULL, "obstetraObstetraId" int, "roleRoleId" int, CONSTRAINT "PK_d72ea127f30e21753c9e229891e" PRIMARY KEY ("userId"))`);
+        await queryRunner.query(`CREATE UNIQUE INDEX "REL_067997007d82c709b7efa6a0bc" ON "user" ("obstetraObstetraId") WHERE "obstetraObstetraId" IS NOT NULL`);
+        await queryRunner.query(`CREATE TABLE "roles" ("roleId" int NOT NULL IDENTITY(1,1), "roleName" nvarchar(255) NOT NULL, CONSTRAINT "PK_39bf7e8af8fe54d9d1c7a8efe6f" PRIMARY KEY ("roleId"))`);
         await queryRunner.query(`CREATE TABLE "medicamentos-receta" ("recetaRecetaId" int NOT NULL, "medicinaMedicinaId" int NOT NULL, CONSTRAINT "PK_10a8005920c2379cd4e1c998881" PRIMARY KEY ("recetaRecetaId", "medicinaMedicinaId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_b251f610ef38ceb7b9c588863e" ON "medicamentos-receta" ("recetaRecetaId") `);
         await queryRunner.query(`CREATE INDEX "IDX_0747b080ac6fbab6b2eda67469" ON "medicamentos-receta" ("medicinaMedicinaId") `);
@@ -33,15 +37,21 @@ export class Tables1756445635468 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "cita" ADD CONSTRAINT "FK_28d5d94406a1112736c6d952366" FOREIGN KEY ("enfermeraEnfermeraId") REFERENCES "enfermera"("enfermeraId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cita" ADD CONSTRAINT "FK_8aa8d4bff3a25649c93651cd9e1" FOREIGN KEY ("pacientePacienteId") REFERENCES "paciente"("pacienteId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cita" ADD CONSTRAINT "FK_70f7b7251c9cbe096214871ca4a" FOREIGN KEY ("obstetraObstetraId") REFERENCES "obstetra"("obstetraId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_59f6c916905edc93ade471f782f" FOREIGN KEY ("programaProgramaId") REFERENCES "programa"("programaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_a445e7fee7678d36e0a6be85a57" FOREIGN KEY ("postaPostaId") REFERENCES "posta"("postaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_7e671ba278d5a07ac3b5a4139d1" FOREIGN KEY ("turnoTurnoId") REFERENCES "turno"("turnoId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_067997007d82c709b7efa6a0bc1" FOREIGN KEY ("obstetraObstetraId") REFERENCES "obstetra"("obstetraId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_ffe3092db843bd8f90fcfe97da7" FOREIGN KEY ("roleRoleId") REFERENCES "roles"("roleId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "enfermera" ADD CONSTRAINT "FK_8a38099afdf58d65cedfb2f44c2" FOREIGN KEY ("userUserId") REFERENCES "user"("userId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "enfermera" ADD CONSTRAINT "FK_c041b0d80bad3b00617b94eebcb" FOREIGN KEY ("programaProgramaId") REFERENCES "programa"("programaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "enfermera" ADD CONSTRAINT "FK_b6765bd3243a6dc2e23fd31ac89" FOREIGN KEY ("postaPostaId") REFERENCES "posta"("postaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "enfermera" ADD CONSTRAINT "FK_eb0ef1bfa937cd1dabde8f88969" FOREIGN KEY ("turnoTurnoId") REFERENCES "turno"("turnoId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "distrito" ADD CONSTRAINT "FK_43d28651d3769a330d4bc54c5f2" FOREIGN KEY ("provinciaProvinciaId") REFERENCES "provincia"("provinciaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "provincia" ADD CONSTRAINT "FK_b28b6eb3d3fb8651acb9b775772" FOREIGN KEY ("regionRegionId") REFERENCES "region"("regionId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "posta" ADD CONSTRAINT "FK_3495b2b32e9e7585745fa163b7f" FOREIGN KEY ("regionId") REFERENCES "region"("regionId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "posta" ADD CONSTRAINT "FK_7a34ab8043b512e6e311d530134" FOREIGN KEY ("provinciaId") REFERENCES "provincia"("provinciaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "posta" ADD CONSTRAINT "FK_301061e18f27c5ff5602f671746" FOREIGN KEY ("distritoId") REFERENCES "distrito"("distritoId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_59f6c916905edc93ade471f782f" FOREIGN KEY ("programaProgramaId") REFERENCES "programa"("programaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_a445e7fee7678d36e0a6be85a57" FOREIGN KEY ("postaPostaId") REFERENCES "posta"("postaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_7e671ba278d5a07ac3b5a4139d1" FOREIGN KEY ("turnoTurnoId") REFERENCES "turno"("turnoId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "obstetra" ADD CONSTRAINT "FK_f1b790eb1d89e716b809243d492" FOREIGN KEY ("userUserId") REFERENCES "user"("userId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_067997007d82c709b7efa6a0bc1" FOREIGN KEY ("obstetraObstetraId") REFERENCES "obstetra"("obstetraId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_ffe3092db843bd8f90fcfe97da7" FOREIGN KEY ("roleRoleId") REFERENCES "roles"("roleId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "medicamentos-receta" ADD CONSTRAINT "FK_b251f610ef38ceb7b9c588863e7" FOREIGN KEY ("recetaRecetaId") REFERENCES "receta"("recetaId") ON DELETE CASCADE ON UPDATE CASCADE`);
         await queryRunner.query(`ALTER TABLE "medicamentos-receta" ADD CONSTRAINT "FK_0747b080ac6fbab6b2eda674696" FOREIGN KEY ("medicinaMedicinaId") REFERENCES "medicina"("medicinaId") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "laboratorio-cita" ADD CONSTRAINT "FK_aeccdb9f76d4d95e9c8ca7b79a8" FOREIGN KEY ("pruebaLaboratorioPruebaId") REFERENCES "prueba_laboratorio"("pruebaId") ON DELETE CASCADE ON UPDATE CASCADE`);
@@ -57,15 +67,21 @@ export class Tables1756445635468 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "laboratorio-cita" DROP CONSTRAINT "FK_aeccdb9f76d4d95e9c8ca7b79a8"`);
         await queryRunner.query(`ALTER TABLE "medicamentos-receta" DROP CONSTRAINT "FK_0747b080ac6fbab6b2eda674696"`);
         await queryRunner.query(`ALTER TABLE "medicamentos-receta" DROP CONSTRAINT "FK_b251f610ef38ceb7b9c588863e7"`);
+        await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_ffe3092db843bd8f90fcfe97da7"`);
+        await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_067997007d82c709b7efa6a0bc1"`);
+        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_f1b790eb1d89e716b809243d492"`);
+        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_7e671ba278d5a07ac3b5a4139d1"`);
+        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_a445e7fee7678d36e0a6be85a57"`);
+        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_59f6c916905edc93ade471f782f"`);
+        await queryRunner.query(`ALTER TABLE "posta" DROP CONSTRAINT "FK_301061e18f27c5ff5602f671746"`);
+        await queryRunner.query(`ALTER TABLE "posta" DROP CONSTRAINT "FK_7a34ab8043b512e6e311d530134"`);
+        await queryRunner.query(`ALTER TABLE "posta" DROP CONSTRAINT "FK_3495b2b32e9e7585745fa163b7f"`);
+        await queryRunner.query(`ALTER TABLE "provincia" DROP CONSTRAINT "FK_b28b6eb3d3fb8651acb9b775772"`);
+        await queryRunner.query(`ALTER TABLE "distrito" DROP CONSTRAINT "FK_43d28651d3769a330d4bc54c5f2"`);
         await queryRunner.query(`ALTER TABLE "enfermera" DROP CONSTRAINT "FK_eb0ef1bfa937cd1dabde8f88969"`);
         await queryRunner.query(`ALTER TABLE "enfermera" DROP CONSTRAINT "FK_b6765bd3243a6dc2e23fd31ac89"`);
         await queryRunner.query(`ALTER TABLE "enfermera" DROP CONSTRAINT "FK_c041b0d80bad3b00617b94eebcb"`);
         await queryRunner.query(`ALTER TABLE "enfermera" DROP CONSTRAINT "FK_8a38099afdf58d65cedfb2f44c2"`);
-        await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_ffe3092db843bd8f90fcfe97da7"`);
-        await queryRunner.query(`ALTER TABLE "user" DROP CONSTRAINT "FK_067997007d82c709b7efa6a0bc1"`);
-        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_7e671ba278d5a07ac3b5a4139d1"`);
-        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_a445e7fee7678d36e0a6be85a57"`);
-        await queryRunner.query(`ALTER TABLE "obstetra" DROP CONSTRAINT "FK_59f6c916905edc93ade471f782f"`);
         await queryRunner.query(`ALTER TABLE "cita" DROP CONSTRAINT "FK_70f7b7251c9cbe096214871ca4a"`);
         await queryRunner.query(`ALTER TABLE "cita" DROP CONSTRAINT "FK_8aa8d4bff3a25649c93651cd9e1"`);
         await queryRunner.query(`ALTER TABLE "cita" DROP CONSTRAINT "FK_28d5d94406a1112736c6d952366"`);
@@ -79,12 +95,17 @@ export class Tables1756445635468 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "IDX_0747b080ac6fbab6b2eda67469" ON "medicamentos-receta"`);
         await queryRunner.query(`DROP INDEX "IDX_b251f610ef38ceb7b9c588863e" ON "medicamentos-receta"`);
         await queryRunner.query(`DROP TABLE "medicamentos-receta"`);
-        await queryRunner.query(`DROP TABLE "turno"`);
-        await queryRunner.query(`DROP INDEX "REL_8a38099afdf58d65cedfb2f44c" ON "enfermera"`);
-        await queryRunner.query(`DROP TABLE "enfermera"`);
+        await queryRunner.query(`DROP TABLE "roles"`);
         await queryRunner.query(`DROP INDEX "REL_067997007d82c709b7efa6a0bc" ON "user"`);
         await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP INDEX "REL_f1b790eb1d89e716b809243d49" ON "obstetra"`);
         await queryRunner.query(`DROP TABLE "obstetra"`);
+        await queryRunner.query(`DROP TABLE "posta"`);
+        await queryRunner.query(`DROP TABLE "region"`);
+        await queryRunner.query(`DROP TABLE "provincia"`);
+        await queryRunner.query(`DROP TABLE "distrito"`);
+        await queryRunner.query(`DROP INDEX "REL_8a38099afdf58d65cedfb2f44c" ON "enfermera"`);
+        await queryRunner.query(`DROP TABLE "enfermera"`);
         await queryRunner.query(`DROP TABLE "programa"`);
         await queryRunner.query(`DROP TABLE "cita"`);
         await queryRunner.query(`DROP TABLE "prueba_laboratorio"`);
@@ -93,8 +114,7 @@ export class Tables1756445635468 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "REL_b031ce59876450762499f88360" ON "receta"`);
         await queryRunner.query(`DROP TABLE "receta"`);
         await queryRunner.query(`DROP TABLE "medicina"`);
-        await queryRunner.query(`DROP TABLE "posta"`);
-        await queryRunner.query(`DROP TABLE "roles"`);
+        await queryRunner.query(`DROP TABLE "turno"`);
     }
 
 }

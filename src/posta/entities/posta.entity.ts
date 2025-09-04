@@ -9,6 +9,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from './region.entity';
+import { Provincia } from './provincia.entity';
+import { Distrito } from './distrito.entity';
 
 @Entity()
 export class Posta {
@@ -48,4 +50,12 @@ export class Posta {
   @ManyToOne(() => Region, (region) => region.postas)
   @JoinColumn({ name: 'regionId' })
   region: Region;
+
+  @ManyToOne(() => Provincia, (provincia) => provincia.postas)
+  @JoinColumn({ name: 'provinciaId' })
+  provincia: Provincia;
+
+  @ManyToOne(() => Distrito, (distrito) => distrito.postas)
+  @JoinColumn({ name: 'distritoId' })
+  distrito: Distrito;
 }
