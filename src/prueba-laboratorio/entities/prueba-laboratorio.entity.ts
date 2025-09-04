@@ -1,11 +1,5 @@
 import { Cita } from '../../cita/entities/cita.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class PruebaLaboratorio {
@@ -19,8 +13,5 @@ export class PruebaLaboratorio {
   estado: boolean;
 
   @ManyToMany(() => Cita, (cita) => cita.laboratorios)
-  @JoinTable({
-    name: 'laboratorio-cita',
-  })
   cita: Cita[];
 }

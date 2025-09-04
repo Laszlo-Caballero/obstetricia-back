@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class Distritos1756952881462 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
-      insert into distritos (nombre, provinciaProvinciaId, regionRegionId) VALUES
+      insert into distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES
             ('Chachapoyas', '1', '01'),
 ('Asunción', '1', '01'),
 ('Balsas', '1', '01'),

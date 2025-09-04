@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Provincias1756948038674 implements MigrationInterface {
+export class Provincias1757017812299 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
              insert into provincia (nombre,regionRegionId) VALUES

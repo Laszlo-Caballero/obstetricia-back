@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Distritos1756953179527 implements MigrationInterface {
+export class Distros1757017816314 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       insert into distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES
@@ -529,8 +529,12 @@ export class Distritos1756953179527 implements MigrationInterface {
 ('Colta', '50', '05'),
 ('Corculla', '50', '05'),
 ('Lampa', '50', '05'),
-('Marcabamba', '50', '05'),
-('Oyolo', '50', '05'),
+('Marcabamba', '50', '05')
+`);
+
+    await queryRunner.query(`
+      INSERT INTO distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES
+      ('Oyolo', '50', '05'),
 ('Pararca', '50', '05'),
 ('San Javier de Alpabamba', '50', '05'),
 ('San José de Ushua', '50', '05'),
@@ -655,12 +659,8 @@ export class Distritos1756953179527 implements MigrationInterface {
 ('Chirinos', '62', '06'),
 ('Huarango', '62', '06'),
 ('La Coipa', '62', '06'),
-('Namballe', '62', '06')
-`);
-    await queryRunner.query(`
-insert into distrito (nombre, provinciaProvinciaId, regionRegionId) 
-VALUES
-('San Jose de Lourdes', '62', '06'),
+('Namballe', '62', '06'),
+('San José de Lourdes', '62', '06'),
 ('Tabaconas', '62', '06'),
 ('Pedro Gálvez', '63', '06'),
 ('Chancay', '63', '06'),
@@ -996,8 +996,12 @@ VALUES
 ('Cahuac', '98', '10'),
 ('Chacabamba', '98', '10'),
 ('Aparicio Pomares', '98', '10'),
-('Jacas Chico', '98', '10'),
-('Obas', '98', '10'),
+('Jacas Chico', '98', '10')
+`);
+
+    await queryRunner.query(`
+      INSERT INTO distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES
+      ('Obas', '98', '10'),
 ('Pampamarca', '98', '10'),
 ('Choras', '98', '10'),
 ('Ica', '99', '11'),
@@ -1256,11 +1260,8 @@ VALUES
 ('Eten Puerto', '125', '14'),
 ('José Leonardo Ortiz', '125', '14'),
 ('La Victoria', '125', '14'),
-('Lagunas', '125', '14')
-`);
-
-    await queryRunner.query(`
-insert into distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES('Monsefu', '125', '14'),
+('Lagunas', '125', '14'),
+('Monsefu', '125', '14'),
 ('Nueva Arica', '125', '14'),
 ('Oyotun', '125', '14'),
 ('Picsi', '125', '14'),
@@ -1884,7 +1885,8 @@ insert into distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES('Mons
 ('Curimana', '195', '25'),
 ('Neshuya', '195', '25'),
 ('Alexander Von Humboldt', '195', '25'),
-('Purus', '196', '25')`);
+('Purus', '196', '25');
+      `);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
