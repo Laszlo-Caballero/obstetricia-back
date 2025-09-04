@@ -9,4 +9,14 @@ export class UtilsController {
   async findAllRegions() {
     return this.utilsService.findAllRegions();
   }
+
+  @Get('provincias')
+  async findAllProvincias() {
+    return this.utilsService.findAllProvincias();
+  }
+
+  @Get('distritos')
+  async findAllDistritos() {
+    return this.utilsService.findAllDistritos();
+  }
 }
