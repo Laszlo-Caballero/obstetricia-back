@@ -29,7 +29,7 @@ export class PostaService {
   ) {}
 
   async create(createPostaDto: CreatePostaDto) {
-    const { regionId, ...rest } = createPostaDto;
+    const { regionId, provinciaId, distritoId, ...rest } = createPostaDto;
 
     const findRegion = await this.regionRepository.findOneBy({ regionId });
 
@@ -37,9 +37,26 @@ export class PostaService {
       throw new HttpException('Region not found', 404);
     }
 
+    const findProvincia = await this.provinciaRepository.findOneBy({
+      provinciaId,
+    });
+    if (!findProvincia) {
+      throw new HttpException('Provincia not found', 404);
+    }
+
+    const findDistrito = await this.distritoRepository.findOneBy({
+      distritoId,
+    });
+
+    if (!findDistrito) {
+      throw new HttpException('Distrito not found', 404);
+    }
+
     const posta = this.postaRepository.create({
       ...rest,
       region: findRegion,
+      provincia: findProvincia,
+      distrito: findDistrito,
     });
 
     await this.postaRepository.insert(posta);
@@ -57,8 +74,13 @@ export class PostaService {
   async importExcel(file: Express.Multer.File) {
     const workbook = new Workbook();
 
+    if (!file?.buffer || file?.buffer?.length === 0) {
+      throw new HttpException('File is empty', 400);
+    }
+    const buffer = Buffer.from(file.buffer);
+
     // @ts-expect-error: exceljs types do not recognize Buffer input for load method
-    await workbook.xlsx.load(Buffer.from(file.buffer));
+    await workbook.xlsx.load(buffer);
 
     const worksheet = workbook.getWorksheet(1);
 

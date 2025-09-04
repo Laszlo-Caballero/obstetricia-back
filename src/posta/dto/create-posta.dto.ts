@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import {
+  IsDate,
   IsLatitude,
   IsLongitude,
   IsNotEmpty,
@@ -7,6 +9,10 @@ import {
 } from 'class-validator';
 
 export class CreatePostaDto {
+  @IsString()
+  @IsNotEmpty()
+  ruc: string;
+
   @IsString()
   @IsNotEmpty()
   nombre: string;
@@ -25,6 +31,15 @@ export class CreatePostaDto {
   @IsLongitude()
   lng: string;
 
+  @IsString()
+  @IsNotEmpty()
+  altitud: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  @Type(() => Date)
+  fechaInicioActividad: Date;
+
   @IsNumber()
   @IsNotEmpty()
   capacidad: number;
@@ -32,4 +47,12 @@ export class CreatePostaDto {
   @IsNumber()
   @IsNotEmpty()
   regionId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  provinciaId: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  distritoId: number;
 }
