@@ -38,9 +38,18 @@ export class PersonalService {
       throw new HttpException('Tipo de personal no encontrado', 404);
     }
 
-    const posta = await this.postaRepository.findOneBy({ postaId });
+    const posta = await Promise.all(
+      postaId.map(async (id) => {
+        const posta = await this.postaRepository.findOneBy({ postaId: id });
+        if (!posta) {
+          throw new HttpException(`Posta con ID ${id} no encontrada`, 404);
+        }
 
-    if (!posta) {
+        return posta;
+      }),
+    );
+
+    if (!posta || posta.length !== postaId.length) {
       throw new HttpException('Posta no encontrada', 404);
     }
 
@@ -51,7 +60,7 @@ export class PersonalService {
       posta,
     });
 
-    await this.personalRepository.insert(newPersonal);
+    await this.personalRepository.save(newPersonal);
 
     return {
       message: 'Personal creado exitosamente',
@@ -70,8 +79,9 @@ export class PersonalService {
   }
 
   async findOne(id: number) {
-    const personal = await this.personalRepository.findOneBy({
-      personalId: id,
+    const personal = await this.personalRepository.findOne({
+      where: { personalId: id },
+      relations: ['turno', 'tipoPersonal', 'posta', 'user'],
     });
 
     if (!personal) {
@@ -107,9 +117,18 @@ export class PersonalService {
       throw new HttpException('Tipo de personal no encontrado', 404);
     }
 
-    const posta = await this.postaRepository.findOneBy({ postaId });
+    const posta = await Promise.all(
+      postaId!.map(async (id) => {
+        const posta = await this.postaRepository.findOneBy({ postaId: id });
+        if (!posta) {
+          throw new HttpException(`Posta con ID ${id} no encontrada`, 404);
+        }
 
-    if (!posta) {
+        return posta;
+      }),
+    );
+
+    if (!posta || posta.length !== postaId!.length) {
       throw new HttpException('Posta no encontrada', 404);
     }
 

@@ -21,6 +21,11 @@ export class CreateAuthDto {
   personalId: number;
 
   @IsNumber()
+  @IsNotEmpty()
+  @IsPositive()
+  roleId: number;
+
+  @IsNumber()
   @IsPositive()
   @IsOptional()
   recursoId?: number;

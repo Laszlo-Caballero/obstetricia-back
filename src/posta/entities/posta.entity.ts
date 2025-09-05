@@ -2,8 +2,9 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from './region.entity';
@@ -51,7 +52,8 @@ export class Posta {
   //   @OneToMany(() => Programa, (programa) => programa.posta)
   //   programas: Programa[];
 
-  @OneToMany(() => Personal, (personal) => personal.posta)
+  @ManyToMany(() => Personal, (personal) => personal.posta)
+  @JoinTable()
   personal: Personal[];
 
   @ManyToOne(() => Region, (region) => region.postas)

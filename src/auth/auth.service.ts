@@ -22,11 +22,11 @@ export class AuthService {
     private readonly rolesRepository: Repository<Roles>,
     @InjectRepository(Personal)
     private readonly personalRepository: Repository<Personal>,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(createAuthDto: CreateAuthDto) {
-    const { personalId, password } = createAuthDto;
+    const { personalId, roleId, password } = createAuthDto;
 
     const findPersonal = await this.personalRepository.findOne({
       where: { personalId: personalId },
@@ -37,7 +37,6 @@ export class AuthService {
     }
 
     let findRecurso;
-    console.log(createAuthDto.recursoId);
 
     if (!createAuthDto.recursoId) {
       findRecurso = await this.recursoRepository.findOneBy({
@@ -53,6 +52,14 @@ export class AuthService {
       throw new HttpException('Default recurso not found', 404);
     }
 
+    const findRole = await this.rolesRepository.findOne({
+      where: { roleId: roleId },
+    });
+
+    if (!findRole) {
+      throw new HttpException('Role not found', 404);
+    }
+
     const hashPassword = await hash(password, 10);
 
     const newAuth = this.authRepository.create({
@@ -60,6 +67,7 @@ export class AuthService {
       user: createAuthDto.user,
       personal: findPersonal,
       recurso: findRecurso,
+      role: findRole,
     });
     await this.authRepository.insert(newAuth);
 
@@ -67,7 +75,7 @@ export class AuthService {
       user: newAuth,
     });
 
-    const payload = { user: newAuth.user, role: '' };
+    const payload = { user: newAuth.user, role: findRole.roleName };
 
     const token = this.jwtService.sign(payload);
 
@@ -80,11 +88,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const { user, password } = loginDto;
+    const { user, password, postaId } = loginDto;
 
     const foundUser = await this.authRepository.findOne({
       where: { user: user },
-      relations: ['personal', 'role'],
+      relations: ['personal', 'role', 'personal.posta'],
     });
 
     if (!foundUser) {
@@ -97,9 +105,18 @@ export class AuthService {
       throw new HttpException('Invalid password', 401);
     }
 
+    console.log(foundUser.personal.posta);
+
+    const posta = foundUser.personal.posta.find((p) => p.postaId === postaId);
+
+    if (!posta && foundUser.role.roleName !== 'Administrador') {
+      throw new HttpException('Posta not found', 404);
+    }
+
     const payload = {
       user: foundUser.user,
       role: foundUser.role.roleName,
+      postaId: posta ? posta.postaId : 0,
     };
 
     const token = this.jwtService.sign(payload);
@@ -107,7 +124,10 @@ export class AuthService {
     return {
       status: 200,
       message: 'Login successful',
-      data: foundUser,
+      data: {
+        ...foundUser,
+        posta: posta || null,
+      },
       token,
     };
   }

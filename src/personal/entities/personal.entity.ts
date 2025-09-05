@@ -7,6 +7,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -53,8 +55,13 @@ export class Personal {
   @ManyToOne(() => Turno, (turno) => turno.personal)
   turno: Turno;
 
-  @ManyToOne(() => Posta, (posta) => posta.personal)
-  posta: Posta;
+  @ManyToMany(() => Posta, (posta) => posta.personal)
+  @JoinTable({
+    name: 'personal_postas',
+    joinColumn: { name: 'personalId' },
+    inverseJoinColumn: { name: 'postaId' },
+  })
+  posta: Posta[];
 
   @ManyToOne(() => TipoPersonal, (tipoPersonal) => tipoPersonal.personal)
   tipoPersonal: TipoPersonal;

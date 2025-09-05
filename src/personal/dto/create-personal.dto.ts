@@ -1,8 +1,11 @@
 import { Type } from 'class-transformer';
 import {
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsDate,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -62,8 +65,9 @@ export class CreatePersonalDto {
   @Type(() => Number)
   turnoId: number;
 
-  @IsNumber()
-  @Min(1)
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsInt({ each: true })
   @Type(() => Number)
-  postaId: number;
+  postaId: number[];
 }
