@@ -12,5 +12,5 @@ export class CreateAuthDto {
   @IsNumber()
   @IsNotEmpty()
   @IsPositive()
-  obstetraId: number;
+  personalId: number;
 }

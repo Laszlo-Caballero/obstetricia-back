@@ -1,8 +1,6 @@
 import { Receta } from '../../receta/entities/receta.entity';
 import { Diagnostico } from '../../diagnostico/entities/diagnostico.entity';
-import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 import { Paciente } from '../../pacientes/entities/paciente.entity';
-import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 
 import {
   Entity,
@@ -14,6 +12,7 @@ import {
   Relation,
 } from 'typeorm';
 import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
+import { Personal } from '../../personal/entities/personal.entity';
 
 @Entity()
 export class Cita {
@@ -23,14 +22,11 @@ export class Cita {
   @OneToOne(() => Receta, (receta) => receta.cita)
   receta: Receta;
 
-  @ManyToOne(() => Enfermera, (enfermera) => enfermera.citas)
-  enfermera: Relation<Enfermera>;
+  @ManyToOne(() => Personal, (personal) => personal.citas)
+  personal: Relation<Personal>;
 
   @ManyToOne(() => Paciente, (paciente) => paciente.citas)
   paciente: Paciente;
-
-  @ManyToOne(() => Obstetra, (obstetra) => obstetra.citas)
-  obstetra: Relation<Obstetra>;
 
   @ManyToMany(() => PruebaLaboratorio, (laboratorio) => laboratorio.cita)
   @JoinTable({

@@ -2,19 +2,16 @@ import { Personal } from '../../personal/entities/personal.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Turno {
+export class TipoPersonal {
   @PrimaryGeneratedColumn()
-  turnoId: number;
+  tipoPersonalId: number;
 
   @Column()
-  horaInicio: string;
-
-  @Column()
-  horaFin: string;
+  nombre: string;
 
   @Column({ default: true })
   estado: boolean;
 
-  @OneToMany(() => Personal, (personal) => personal.turno)
+  @OneToMany(() => Personal, (personal) => personal.tipoPersonal)
   personal: Personal[];
 }

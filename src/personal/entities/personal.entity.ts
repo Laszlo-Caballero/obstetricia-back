@@ -1,0 +1,61 @@
+import { Auth } from '../../auth/entities/auth.entity';
+import { Cita } from '../../cita/entities/cita.entity';
+import { Posta } from '../../posta/entities/posta.entity';
+import { TipoPersonal } from '../../tipo-personal/entities/tipo-personal.entity';
+import { Turno } from '../../turnos/entities/turno.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+@Entity()
+export class Personal {
+  @PrimaryGeneratedColumn()
+  personalId: number;
+
+  @Column()
+  nombre: string;
+
+  @Column()
+  apellidoPaterno: string;
+
+  @Column()
+  apellidoMaterno: string;
+
+  @Column({ type: 'date' })
+  fechaNacimiento: Date;
+
+  @Column()
+  sexo: string;
+
+  @Column()
+  telefono: string;
+
+  @Column()
+  dni: string;
+
+  @Column()
+  codigoColegio: string;
+
+  @Column({ default: true })
+  estado: boolean;
+
+  @OneToOne(() => Auth, (auth) => auth.personal)
+  user: Auth;
+
+  @ManyToOne(() => Turno, (turno) => turno.personal)
+  turno: Turno;
+
+  @ManyToOne(() => Posta, (posta) => posta.personal)
+  posta: Posta;
+
+  @ManyToOne(() => TipoPersonal, (tipoPersonal) => tipoPersonal.personal)
+  tipoPersonal: TipoPersonal;
+
+  @OneToMany(() => Cita, (cita) => cita.personal)
+  citas: Cita[];
+}

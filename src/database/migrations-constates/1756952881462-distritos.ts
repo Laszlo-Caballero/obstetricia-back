@@ -549,7 +549,11 @@ export class Distritos1756952881462 implements MigrationInterface {
 ('Huancapi', '52', '05'),
 ('Alcamenca', '52', '05'),
 ('Apongo', '52', '05'),
-('Asquipata', '52', '05'),
+('Asquipata', '52', '05');
+`);
+
+    await queryRunner.query(`
+        insert into distrito (nombre, provinciaProvinciaId, regionRegionId) VALUES
 ('Canaria', '52', '05'),
 ('Cayara', '52', '05'),
 ('Colca', '52', '05'),
@@ -1230,7 +1234,11 @@ export class Distritos1756952881462 implements MigrationInterface {
 ('Marcabal', '121', '13'),
 ('Sanagoran', '121', '13'),
 ('Sarin', '121', '13'),
-('Sartimbamba', '121', '13'),
+('Sartimbamba', '121', '13')
+`);
+
+    await queryRunner.query(`
+        INSERT INTO "districts" (name, "provinceId", "regionId") VALUES
 ('Santiago de Chuco', '122', '13'),
 ('Angasmarca', '122', '13'),
 ('Cachicadan', '122', '13'),
@@ -1877,8 +1885,7 @@ export class Distritos1756952881462 implements MigrationInterface {
 ('Curimana', '195', '25'),
 ('Neshuya', '195', '25'),
 ('Alexander Von Humboldt', '195', '25'),
-('Purus', '196', '25');
-            `);
+('Purus', '196', '25');`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

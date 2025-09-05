@@ -1,5 +1,4 @@
 import { Roles } from '../../role/entities/roles.entity';
-import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
@@ -10,8 +9,8 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 import { Consulta } from '../../ayuda/consulta/entities/consulta.entity';
+import { Personal } from '../../personal/entities/personal.entity';
 
 @Entity('user')
 export class Auth {
@@ -24,12 +23,9 @@ export class Auth {
   @Column()
   password: string;
 
-  @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
+  @OneToOne(() => Personal, (personal) => personal.user)
   @JoinColumn()
-  obstetra: Relation<Obstetra>;
-
-  @OneToOne(() => Enfermera, (enfermera) => enfermera.user)
-  enfermera: Enfermera;
+  personal: Personal;
 
   @OneToMany(() => Consulta, (consulta) => consulta.user)
   consultas: Consulta[];

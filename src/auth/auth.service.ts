@@ -3,12 +3,12 @@ import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Obstetra } from 'src/obstetra/entities/obstetra.entity';
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { Roles } from 'src/role/entities/roles.entity';
 import { SetRoleDto } from './dto/setRole.dto';
+import { Personal } from 'src/personal/entities/personal.entity';
 
 @Injectable()
 export class AuthService {
@@ -18,32 +18,32 @@ export class AuthService {
 
     @InjectRepository(Roles)
     private readonly rolesRepository: Repository<Roles>,
-    @InjectRepository(Obstetra)
-    private readonly obstetraRepository: Repository<Obstetra>,
+    @InjectRepository(Personal)
+    private readonly personalRepository: Repository<Personal>,
     private jwtService: JwtService,
   ) {}
 
   async register(createAuthDto: CreateAuthDto) {
-    const { obstetraId, password } = createAuthDto;
+    const { personalId, password } = createAuthDto;
 
-    const findObstetra = await this.obstetraRepository.findOne({
-      where: { obstetraId: obstetraId },
+    const findPersonal = await this.personalRepository.findOne({
+      where: { personalId: personalId },
     });
 
-    if (!findObstetra) {
-      throw new HttpException('Obstetra not found', 404);
+    if (!findPersonal) {
+      throw new HttpException('Personal not found', 404);
     }
 
     const hashPassword = await hash(password, 10);
 
     const newAuth = this.authRepository.create({
       password: hashPassword,
-      obstetra: findObstetra,
       user: createAuthDto.user,
+      personal: findPersonal,
     });
     await this.authRepository.insert(newAuth);
 
-    await this.obstetraRepository.update(findObstetra.obstetraId, {
+    await this.personalRepository.update(findPersonal.personalId, {
       user: newAuth,
     });
 
@@ -93,15 +93,15 @@ export class AuthService {
   }
 
   async setRole(setRoleDto: SetRoleDto) {
-    const { obstetraId, roleId } = setRoleDto;
+    const { personalId, roleId } = setRoleDto;
 
-    const findObstetra = await this.obstetraRepository.findOne({
-      where: { obstetraId: obstetraId },
+    const findPersonal = await this.personalRepository.findOne({
+      where: { personalId: personalId },
       relations: ['user'],
     });
 
-    if (!findObstetra) {
-      throw new HttpException('Obstetra not found', 404);
+    if (!findPersonal) {
+      throw new HttpException('Personal not found', 404);
     }
 
     const findRole = await this.rolesRepository.findOne({
@@ -112,11 +112,11 @@ export class AuthService {
       throw new HttpException('Role not found', 404);
     }
 
-    if (!findObstetra.user) {
-      throw new HttpException('Obstetra has no associated user', 404);
+    if (!findPersonal.user) {
+      throw new HttpException('Personal has no associated user', 404);
     }
 
-    await this.authRepository.update(findObstetra.user.userId, {
+    await this.authRepository.update(findPersonal.user.userId, {
       role: findRole,
     });
 
@@ -128,15 +128,19 @@ export class AuthService {
   }
 
   async registerAdmin() {
-    const newObstetra = this.obstetraRepository.create({
-      apellido_materno: 'Admin',
-      apellido_paterno: 'Admin',
+    const newPersonal = this.personalRepository.create({
+      apellidoMaterno: 'Admin',
+      apellidoPaterno: 'Admin',
       nombre: 'Admin',
-      cop: '0000',
-      titulo: 'Administrador',
+      sexo: 'Macho men',
+      dni: '70672402',
+      fechaNacimiento: new Date('1999-01-01'),
+      telefono: '000000000',
+      codigoColegio: '0000',
+      estado: true,
     });
 
-    await this.obstetraRepository.insert(newObstetra);
+    await this.personalRepository.insert(newPersonal);
 
     const hasPassword = await hash('Admin123', 10);
 
@@ -150,14 +154,14 @@ export class AuthService {
 
     const newAdmin = this.authRepository.create({
       password: hasPassword,
-      obstetra: newObstetra,
+      personal: newPersonal,
       user: 'Admin',
       role: findRole,
     });
 
     await this.authRepository.insert(newAdmin);
 
-    await this.obstetraRepository.update(newObstetra.obstetraId, {
+    await this.personalRepository.update(newPersonal.personalId, {
       user: newAdmin,
     });
 

@@ -5,9 +5,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from './entities/auth.entity';
-import { Obstetra } from 'src/obstetra/entities/obstetra.entity';
 import { Roles } from 'src/role/entities/roles.entity';
 import { ConfigModule } from '@nestjs/config';
+import { Personal } from 'src/personal/entities/personal.entity';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
-    TypeOrmModule.forFeature([Auth, Roles, Obstetra]),
+    TypeOrmModule.forFeature([Auth, Roles, Personal]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

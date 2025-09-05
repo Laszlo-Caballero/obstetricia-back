@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build -b swc",
+    "build": "nest build -b swc --type-check",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start -b swc",
     "dev": "npm run migration:run-dev && nest start --builder swc --watch",
