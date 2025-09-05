@@ -226,6 +226,18 @@ export class PostaService {
     };
   }
 
+  async searchPostas(input: string) {
+    const postaList = await this.postaRepository.find({
+      where: { nombre: Like(`%${input}%`) },
+    });
+
+    return {
+      message: 'Buscada exitosa',
+      status: 200,
+      data: postaList,
+    };
+  }
+
   async rawPostas() {
     const cachePostas = await this.redisService.get<Posta[]>('postas');
 

@@ -3,10 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RedisService } from './redis/redis.service';
 import { RedisModule } from './redis/redis.module';
-import { ObstetraModule } from './obstetra/obstetra.module';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
-import { EnfermerasModule } from './enfermeras/enfermeras.module';
 import { TurnosModule } from './turnos/turnos.module';
 import { PostaModule } from './posta/posta.module';
 import { CitaModule } from './cita/cita.module';
@@ -21,6 +19,11 @@ import { ModuloModule } from './ayuda/modulo/modulo.module';
 import { PrioridadModule } from './ayuda/prioridad/prioridad.module';
 import { TipoConsultaModule } from './ayuda/tipo-consulta/tipo-consulta.module';
 import { ConsultaModule } from './ayuda/consulta/consulta.module';
+import { PersonalModule } from './personal/personal.module';
+import { TipoPersonalModule } from './tipo-personal/tipo-personal.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { RecursoModule } from './recurso/recurso.module';
 
 @Module({
   imports: [
@@ -41,11 +44,14 @@ import { ConsultaModule } from './ayuda/consulta/consulta.module';
       },
       requestTimeout: 0,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/static',
+    }),
+
     RedisModule,
-    ObstetraModule,
     AuthModule,
     RoleModule,
-    EnfermerasModule,
     TurnosModule,
     PostaModule,
     CitaModule,
@@ -60,6 +66,9 @@ import { ConsultaModule } from './ayuda/consulta/consulta.module';
     PrioridadModule,
     TipoConsultaModule,
     ConsultaModule,
+    PersonalModule,
+    TipoPersonalModule,
+    RecursoModule,
   ],
   controllers: [],
   providers: [RedisService],

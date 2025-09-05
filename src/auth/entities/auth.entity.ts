@@ -1,17 +1,16 @@
 import { Roles } from '../../role/entities/roles.entity';
-import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
-import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
 import { Consulta } from '../../ayuda/consulta/entities/consulta.entity';
+import { Personal } from '../../personal/entities/personal.entity';
+import { Recurso } from '../../recurso/entities/recurso.entity';
 
 @Entity('user')
 export class Auth {
@@ -24,16 +23,15 @@ export class Auth {
   @Column()
   password: string;
 
-  @OneToOne(() => Obstetra, (obstetra) => obstetra.user)
-  @JoinColumn()
-  obstetra: Relation<Obstetra>;
-
-  @OneToOne(() => Enfermera, (enfermera) => enfermera.user)
-  enfermera: Enfermera;
+  @OneToOne(() => Personal, (personal) => personal.user)
+  personal: Personal;
 
   @OneToMany(() => Consulta, (consulta) => consulta.user)
   consultas: Consulta[];
 
   @ManyToOne(() => Roles, (role) => role.users)
   role: Relation<Roles>;
+
+  @ManyToOne(() => Recurso, (recurso) => recurso.users)
+  recurso: Relation<Recurso>;
 }

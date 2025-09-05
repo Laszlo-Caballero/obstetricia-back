@@ -1,13 +1,11 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Entity } from 'typeorm';
 
-export class CreateTurnoDto {
+@Entity()
+export class CreateTipoPersonalDto {
   @IsString()
   @IsNotEmpty()
-  horaInicio: string;
-
-  @IsString()
-  @IsNotEmpty()
-  horaFin: string;
+  nombre: string;
 
   @IsBoolean()
   @IsOptional()

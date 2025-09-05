@@ -61,6 +61,11 @@ export class PostaController {
     return this.postaService.rawPostas();
   }
 
+  @Get('search/:input')
+  searchPostas(@Param('input') input: string) {
+    return this.postaService.searchPostas(input);
+  }
+
   // @Auth(RolesEnum.Administrador)
   @Get(':id')
   findOne(@Param('id') id: string) {

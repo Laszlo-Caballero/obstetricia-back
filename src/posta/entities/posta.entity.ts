@@ -1,22 +1,21 @@
-import { Enfermera } from '../../enfermeras/entities/enfermera.entity';
-import { Obstetra } from '../../obstetra/entities/obstetra.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from './region.entity';
 import { Provincia } from './provincia.entity';
 import { Distrito } from './distrito.entity';
+import { Personal } from '../../personal/entities/personal.entity';
 
 @Entity()
 export class Posta {
   @PrimaryGeneratedColumn()
   postaId: number;
-  //TODO: QUITAR EL DEFALUT
   @Column({ default: '00000000000' })
   ruc: string;
 
@@ -34,7 +33,6 @@ export class Posta {
 
   @Column()
   lng: string;
-  //TODO: QUITAR EL DEFALUT
   @Column({ default: '0' })
   altitud: string;
 
@@ -54,11 +52,9 @@ export class Posta {
   //   @OneToMany(() => Programa, (programa) => programa.posta)
   //   programas: Programa[];
 
-  @OneToMany(() => Obstetra, (obstetra) => obstetra.posta)
-  obstetras: Obstetra[];
-
-  @OneToMany(() => Enfermera, (enfermera) => enfermera.posta)
-  enfermeras: Enfermera[];
+  @ManyToMany(() => Personal, (personal) => personal.posta)
+  @JoinTable()
+  personal: Personal[];
 
   @ManyToOne(() => Region, (region) => region.postas)
   @JoinColumn({ name: 'regionId' })

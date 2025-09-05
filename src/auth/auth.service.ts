@@ -1,53 +1,81 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Obstetra } from 'src/obstetra/entities/obstetra.entity';
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { Roles } from 'src/role/entities/roles.entity';
 import { SetRoleDto } from './dto/setRole.dto';
+import { Personal } from 'src/personal/entities/personal.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
-
+    @InjectRepository(Recurso)
+    private readonly recursoRepository: Repository<Recurso>,
     @InjectRepository(Roles)
     private readonly rolesRepository: Repository<Roles>,
-    @InjectRepository(Obstetra)
-    private readonly obstetraRepository: Repository<Obstetra>,
-    private jwtService: JwtService,
+    @InjectRepository(Personal)
+    private readonly personalRepository: Repository<Personal>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(createAuthDto: CreateAuthDto) {
-    const { obstetraId, password } = createAuthDto;
+    const { personalId, roleId, password } = createAuthDto;
 
-    const findObstetra = await this.obstetraRepository.findOne({
-      where: { obstetraId: obstetraId },
+    const findPersonal = await this.personalRepository.findOne({
+      where: { personalId: personalId },
     });
 
-    if (!findObstetra) {
-      throw new HttpException('Obstetra not found', 404);
+    if (!findPersonal) {
+      throw new HttpException('Personal not found', 404);
+    }
+
+    let findRecurso;
+
+    if (!createAuthDto.recursoId) {
+      findRecurso = await this.recursoRepository.findOneBy({
+        nombre: 'gato',
+      });
+    } else {
+      findRecurso = await this.recursoRepository.findOne({
+        where: { recursoId: createAuthDto.recursoId },
+      });
+    }
+
+    if (!findRecurso) {
+      throw new HttpException('Default recurso not found', 404);
+    }
+
+    const findRole = await this.rolesRepository.findOne({
+      where: { roleId: roleId },
+    });
+
+    if (!findRole) {
+      throw new HttpException('Role not found', 404);
     }
 
     const hashPassword = await hash(password, 10);
 
     const newAuth = this.authRepository.create({
       password: hashPassword,
-      obstetra: findObstetra,
       user: createAuthDto.user,
+      personal: findPersonal,
+      recurso: findRecurso,
+      role: findRole,
     });
     await this.authRepository.insert(newAuth);
 
-    await this.obstetraRepository.update(findObstetra.obstetraId, {
+    await this.personalRepository.update(findPersonal.personalId, {
       user: newAuth,
     });
 
-    const payload = { user: newAuth.user, role: '' };
+    const payload = { user: newAuth.user, role: findRole.roleName };
 
     const token = this.jwtService.sign(payload);
 
@@ -60,11 +88,11 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const { user, password } = loginDto;
+    const { user, password, postaId } = loginDto;
 
     const foundUser = await this.authRepository.findOne({
       where: { user: user },
-      relations: ['obstetra', 'role'],
+      relations: ['personal', 'role', 'personal.posta'],
     });
 
     if (!foundUser) {
@@ -77,9 +105,18 @@ export class AuthService {
       throw new HttpException('Invalid password', 401);
     }
 
+    console.log(foundUser.personal.posta);
+
+    const posta = foundUser.personal.posta.find((p) => p.postaId === postaId);
+
+    if (!posta && foundUser.role.roleName !== 'Administrador') {
+      throw new HttpException('Posta not found', 404);
+    }
+
     const payload = {
       user: foundUser.user,
       role: foundUser.role.roleName,
+      postaId: posta ? posta.postaId : 0,
     };
 
     const token = this.jwtService.sign(payload);
@@ -87,21 +124,24 @@ export class AuthService {
     return {
       status: 200,
       message: 'Login successful',
-      data: foundUser,
+      data: {
+        ...foundUser,
+        posta: posta || null,
+      },
       token,
     };
   }
 
   async setRole(setRoleDto: SetRoleDto) {
-    const { obstetraId, roleId } = setRoleDto;
+    const { personalId, roleId } = setRoleDto;
 
-    const findObstetra = await this.obstetraRepository.findOne({
-      where: { obstetraId: obstetraId },
+    const findPersonal = await this.personalRepository.findOne({
+      where: { personalId: personalId },
       relations: ['user'],
     });
 
-    if (!findObstetra) {
-      throw new HttpException('Obstetra not found', 404);
+    if (!findPersonal) {
+      throw new HttpException('Personal not found', 404);
     }
 
     const findRole = await this.rolesRepository.findOne({
@@ -112,11 +152,11 @@ export class AuthService {
       throw new HttpException('Role not found', 404);
     }
 
-    if (!findObstetra.user) {
-      throw new HttpException('Obstetra has no associated user', 404);
+    if (!findPersonal.user) {
+      throw new HttpException('Personal has no associated user', 404);
     }
 
-    await this.authRepository.update(findObstetra.user.userId, {
+    await this.authRepository.update(findPersonal.user.userId, {
       role: findRole,
     });
 
@@ -128,15 +168,26 @@ export class AuthService {
   }
 
   async registerAdmin() {
-    const newObstetra = this.obstetraRepository.create({
-      apellido_materno: 'Admin',
-      apellido_paterno: 'Admin',
+    const findRecurso = await this.recursoRepository.findOneBy({
+      nombre: Like('%gato%'),
+    });
+    if (!findRecurso) {
+      throw new HttpException('Default recurso not found', 404);
+    }
+
+    const newPersonal = this.personalRepository.create({
+      apellidoMaterno: 'Admin',
+      apellidoPaterno: 'Admin',
       nombre: 'Admin',
-      cop: '0000',
-      titulo: 'Administrador',
+      sexo: 'Macho men',
+      dni: '70672402',
+      fechaNacimiento: new Date('1999-01-01'),
+      telefono: '000000000',
+      codigoColegio: '0000',
+      estado: true,
     });
 
-    await this.obstetraRepository.insert(newObstetra);
+    await this.personalRepository.insert(newPersonal);
 
     const hasPassword = await hash('Admin123', 10);
 
@@ -150,14 +201,15 @@ export class AuthService {
 
     const newAdmin = this.authRepository.create({
       password: hasPassword,
-      obstetra: newObstetra,
+      personal: newPersonal,
       user: 'Admin',
       role: findRole,
+      recurso: findRecurso,
     });
 
     await this.authRepository.insert(newAdmin);
 
-    await this.obstetraRepository.update(newObstetra.obstetraId, {
+    await this.personalRepository.update(newPersonal.personalId, {
       user: newAdmin,
     });
 
