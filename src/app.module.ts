@@ -22,8 +22,6 @@ import { PrioridadModule } from './ayuda/prioridad/prioridad.module';
 import { TipoConsultaModule } from './ayuda/tipo-consulta/tipo-consulta.module';
 import { ConsultaModule } from './ayuda/consulta/consulta.module';
 
-
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,6 +39,7 @@ import { ConsultaModule } from './ayuda/consulta/consulta.module';
         encrypt: process.env.ENCRYPT === 'true',
         trustServerCertificate: true,
       },
+      requestTimeout: 0,
     }),
     RedisModule,
     ObstetraModule,
@@ -61,7 +60,6 @@ import { ConsultaModule } from './ayuda/consulta/consulta.module';
     PrioridadModule,
     TipoConsultaModule,
     ConsultaModule,
-   
   ],
   controllers: [],
   providers: [RedisService],

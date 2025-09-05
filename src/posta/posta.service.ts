@@ -177,10 +177,22 @@ export class PostaService {
 
     await this.redisService.set('postas', findAllPosta);
 
+    const [findFilterPosta, totalItems] =
+      await this.postaRepository.findAndCount({
+        skip: 0,
+        take: 10,
+        relations: ['region', 'provincia', 'distrito'],
+      });
+
     return {
       status: 200,
       message: 'File processed successfully',
-      data,
+      data: findFilterPosta,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / 10),
+        currentPage: 1,
+      },
     };
   }
 
