@@ -21,6 +21,9 @@ import { TipoConsultaModule } from './ayuda/tipo-consulta/tipo-consulta.module';
 import { ConsultaModule } from './ayuda/consulta/consulta.module';
 import { PersonalModule } from './personal/personal.module';
 import { TipoPersonalModule } from './tipo-personal/tipo-personal.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { RecursoModule } from './recurso/recurso.module';
 
 @Module({
   imports: [
@@ -40,6 +43,11 @@ import { TipoPersonalModule } from './tipo-personal/tipo-personal.module';
         trustServerCertificate: true,
       },
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/static',
+    }),
+
     RedisModule,
     AuthModule,
     RoleModule,
@@ -59,6 +67,7 @@ import { TipoPersonalModule } from './tipo-personal/tipo-personal.module';
     ConsultaModule,
     PersonalModule,
     TipoPersonalModule,
+    RecursoModule,
   ],
   controllers: [],
   providers: [RedisService],

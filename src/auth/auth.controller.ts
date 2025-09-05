@@ -9,7 +9,7 @@ import { SetRoleDto } from './dto/setRole.dto';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Auth(RolesEnum.Administrador)
+  // @Auth(RolesEnum.Administrador)
   @Post('register')
   register(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.register(createAuthDto);

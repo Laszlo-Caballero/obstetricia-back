@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -9,13 +9,15 @@ import { LoginDto } from './dto/login.dto';
 import { Roles } from 'src/role/entities/roles.entity';
 import { SetRoleDto } from './dto/setRole.dto';
 import { Personal } from 'src/personal/entities/personal.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
-
+    @InjectRepository(Recurso)
+    private readonly recursoRepository: Repository<Recurso>,
     @InjectRepository(Roles)
     private readonly rolesRepository: Repository<Roles>,
     @InjectRepository(Personal)
@@ -34,12 +36,30 @@ export class AuthService {
       throw new HttpException('Personal not found', 404);
     }
 
+    let findRecurso;
+    console.log(createAuthDto.recursoId);
+
+    if (!createAuthDto.recursoId) {
+      findRecurso = await this.recursoRepository.findOneBy({
+        nombre: 'gato',
+      });
+    } else {
+      findRecurso = await this.recursoRepository.findOne({
+        where: { recursoId: createAuthDto.recursoId },
+      });
+    }
+
+    if (!findRecurso) {
+      throw new HttpException('Default recurso not found', 404);
+    }
+
     const hashPassword = await hash(password, 10);
 
     const newAuth = this.authRepository.create({
       password: hashPassword,
       user: createAuthDto.user,
       personal: findPersonal,
+      recurso: findRecurso,
     });
     await this.authRepository.insert(newAuth);
 
@@ -64,7 +84,7 @@ export class AuthService {
 
     const foundUser = await this.authRepository.findOne({
       where: { user: user },
-      relations: ['obstetra', 'role'],
+      relations: ['personal', 'role'],
     });
 
     if (!foundUser) {
@@ -128,6 +148,13 @@ export class AuthService {
   }
 
   async registerAdmin() {
+    const findRecurso = await this.recursoRepository.findOneBy({
+      nombre: Like('%gato%'),
+    });
+    if (!findRecurso) {
+      throw new HttpException('Default recurso not found', 404);
+    }
+
     const newPersonal = this.personalRepository.create({
       apellidoMaterno: 'Admin',
       apellidoPaterno: 'Admin',
@@ -157,6 +184,7 @@ export class AuthService {
       personal: newPersonal,
       user: 'Admin',
       role: findRole,
+      recurso: findRecurso,
     });
 
     await this.authRepository.insert(newAdmin);

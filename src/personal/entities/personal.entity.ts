@@ -6,10 +6,12 @@ import { Turno } from '../../turnos/entities/turno.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 
 @Entity()
@@ -45,7 +47,8 @@ export class Personal {
   estado: boolean;
 
   @OneToOne(() => Auth, (auth) => auth.personal)
-  user: Auth;
+  @JoinColumn({ name: 'userId' })
+  user: Relation<Auth>;
 
   @ManyToOne(() => Turno, (turno) => turno.personal)
   turno: Turno;

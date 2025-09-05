@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from 'class-validator';
 
 export class CreateAuthDto {
   @IsString()
@@ -13,4 +19,9 @@ export class CreateAuthDto {
   @IsNotEmpty()
   @IsPositive()
   personalId: number;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  recursoId?: number;
 }

@@ -8,6 +8,7 @@ import { Auth } from './entities/auth.entity';
 import { Roles } from 'src/role/entities/roles.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Personal } from 'src/personal/entities/personal.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { Personal } from 'src/personal/entities/personal.entity';
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),
-    TypeOrmModule.forFeature([Auth, Roles, Personal]),
+    TypeOrmModule.forFeature([Auth, Roles, Personal, Recurso]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
