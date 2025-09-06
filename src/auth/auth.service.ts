@@ -10,6 +10,7 @@ import { Roles } from 'src/role/entities/roles.entity';
 import { SetRoleDto } from './dto/setRole.dto';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import { RequestUser } from './interface/type';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,19 @@ export class AuthService {
     private readonly personalRepository: Repository<Personal>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async getProfile(data: RequestUser) {
+    const foundUser = await this.authRepository.findOne({
+      where: { userId: data.user.userId },
+      relations: ['personal', 'role', 'personal.posta', 'recurso'],
+    });
+
+    return {
+      status: 200,
+      message: 'Profile fetched successfully',
+      data: foundUser,
+    };
+  }
 
   async register(createAuthDto: CreateAuthDto) {
     const { personalId, roleId, password } = createAuthDto;
@@ -75,15 +89,20 @@ export class AuthService {
       user: newAuth,
     });
 
-    const payload = { user: newAuth.user, role: findRole.roleName };
+    const payload = {
+      userId: newAuth.userId,
+      user: newAuth.user,
+      role: newAuth.role.roleName,
+      postaId: null,
+    };
 
     const token = this.jwtService.sign(payload);
 
     return {
       status: 200,
       message: 'User registered successfully',
-      data: newAuth,
       token,
+      data: { ...newAuth, token },
     };
   }
 
@@ -92,7 +111,7 @@ export class AuthService {
 
     const foundUser = await this.authRepository.findOne({
       where: { user: user },
-      relations: ['personal', 'role', 'personal.posta'],
+      relations: ['personal', 'role', 'personal.posta', 'recurso'],
     });
 
     if (!foundUser) {
@@ -105,8 +124,6 @@ export class AuthService {
       throw new HttpException('Invalid password', 401);
     }
 
-    console.log(foundUser.personal.posta);
-
     const posta = foundUser.personal.posta.find((p) => p.postaId === postaId);
 
     if (!posta && foundUser.role.roleName !== 'Administrador') {
@@ -114,6 +131,7 @@ export class AuthService {
     }
 
     const payload = {
+      userId: foundUser.userId,
       user: foundUser.user,
       role: foundUser.role.roleName,
       postaId: posta ? posta.postaId : 0,
@@ -126,9 +144,12 @@ export class AuthService {
       message: 'Login successful',
       data: {
         ...foundUser,
-        posta: posta || null,
+        personal: {
+          ...foundUser.personal,
+          posta: posta ? posta : null,
+        },
+        token,
       },
-      token,
     };
   }
 
@@ -225,6 +246,13 @@ export class AuthService {
       message: 'Admin registered successfully',
       data: newAdmin,
       token: token,
+    };
+  }
+  validateUser(data: RequestUser) {
+    return {
+      message: 'Usuario validado correctamente',
+      status: true,
+      role: data.user.role,
     };
   }
 }

@@ -229,6 +229,7 @@ export class PostaService {
   async searchPostas(input: string) {
     const postaList = await this.postaRepository.find({
       where: { nombre: Like(`%${input}%`) },
+      take: 10,
     });
 
     return {

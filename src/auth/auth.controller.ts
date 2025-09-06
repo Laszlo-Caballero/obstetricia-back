@@ -1,10 +1,11 @@
-import { Controller, Body, Post, Get, Patch } from '@nestjs/common';
+import { Controller, Body, Post, Get, Patch, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
 import { Auth } from './decorators/auth.decorator';
 import { RolesEnum } from './enum/roles';
 import { SetRoleDto } from './dto/setRole.dto';
+import { RequestUser } from './interface/type';
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +34,13 @@ export class AuthController {
 
   @Auth()
   @Get('profile')
-  getProfile() {
-    return 'User Profile';
+  getProfile(@Req() req: RequestUser) {
+    return this.authService.getProfile(req);
+  }
+
+  @Auth()
+  @Get('validate')
+  validateToken(@Req() req: RequestUser) {
+    return this.authService.validateUser(req);
   }
 }
