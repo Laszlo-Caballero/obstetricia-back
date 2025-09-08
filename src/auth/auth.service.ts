@@ -210,10 +210,25 @@ export class AuthService {
       recurso: newRecurso,
     });
 
+    const updatedUser = await this.authRepository.findOne({
+      where: { userId: req.user.userId },
+      relations: ['personal', 'role', 'personal.posta', 'recurso'],
+    });
+
+    const posta = updatedUser?.personal.posta.find(
+      (p) => p.postaId === req.user.postaId,
+    );
+
     return {
       status: 200,
       message: 'Foto updated successfully',
-      data: newRecurso,
+      data: {
+        ...updatedUser,
+        personal: {
+          ...updatedUser?.personal,
+          posta: posta ? posta : null,
+        },
+      },
     };
   }
 
