@@ -1,4 +1,4 @@
-import { Receta } from '../../receta/entities/receta.entity';
+import { Receta } from '../../farmacia/receta/entities/receta.entity';
 import { Diagnostico } from '../../diagnostico/entities/diagnostico.entity';
 import { Paciente } from '../../pacientes/entities/paciente.entity';
 

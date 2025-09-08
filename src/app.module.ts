@@ -10,8 +10,8 @@ import { PostaModule } from './posta/posta.module';
 import { CitaModule } from './cita/cita.module';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { PruebaLaboratorioModule } from './prueba-laboratorio/prueba-laboratorio.module';
-import { RecetaModule } from './receta/receta.module';
-import { MedicinaModule } from './medicina/medicina.module';
+import { RecetaModule } from './farmacia/receta/receta.module';
+import { MedicinaModule } from './farmacia/medicina/medicina.module';
 import { DiagnosticoModule } from './diagnostico/diagnostico.module';
 import { ProgramaModule } from './programa/programa.module';
 import { UtilsModule } from './utils/utils.module';
@@ -24,6 +24,9 @@ import { TipoPersonalModule } from './tipo-personal/tipo-personal.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { RecursoModule } from './recurso/recurso.module';
+import { PresentacionModule } from './farmacia/presentacion/presentacion.module';
+import { CategoriaModule } from './farmacia/categoria/categoria.module';
+import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina.module';
 
 @Module({
   imports: [
@@ -69,6 +72,9 @@ import { RecursoModule } from './recurso/recurso.module';
     PersonalModule,
     TipoPersonalModule,
     RecursoModule,
+    PresentacionModule,
+    CategoriaModule,
+    RecetaMedicinaModule,
   ],
   controllers: [],
   providers: [RedisService],
