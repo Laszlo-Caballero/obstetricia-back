@@ -1,4 +1,13 @@
-import { Controller, Body, Post, Get, Patch, Req } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Post,
+  Get,
+  Patch,
+  Req,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginDto } from './dto/login.dto';
@@ -6,6 +15,9 @@ import { Auth } from './decorators/auth.decorator';
 import { RolesEnum } from './enum/roles';
 import { SetRoleDto } from './dto/setRole.dto';
 import { RequestUser } from './interface/type';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { join } from 'path';
 
 @Controller('auth')
 export class AuthController {
@@ -42,5 +54,27 @@ export class AuthController {
   @Get('validate')
   validateToken(@Req() req: RequestUser) {
     return this.authService.validateUser(req);
+  }
+
+  @Auth()
+  @Post('update-foto')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: join(__dirname, '../../public', 'foto'),
+        filename: (req, file, cb) => {
+          const fix = Date.now();
+          const [fileName, ext] = file.originalname.split('.');
+          const name = `${fileName}-${fix}.${ext}`;
+          cb(null, name);
+        },
+      }),
+    }),
+  )
+  updateFoto(
+    @Req() req: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.authService.updateFoto(req, file);
   }
 }
