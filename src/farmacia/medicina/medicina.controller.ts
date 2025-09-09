@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { MedicinaService } from './medicina.service';
 import { CreateMedicinaDto } from './dto/create-medicina.dto';
 import { UpdateMedicinaDto } from './dto/update-medicina.dto';
 
-@Controller('medicina')
+@Controller('farmacia/medicina')
 export class MedicinaController {
   constructor(private readonly medicinaService: MedicinaService) {}
 
@@ -13,8 +23,42 @@ export class MedicinaController {
   }
 
   @Get()
-  findAll() {
-    return this.medicinaService.findAll();
+  findAll(
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
+    @Query('categoriaId') categoriaId?: number,
+    @Query('presentacionId') presentacionId?: number,
+    @Query('status') status?: boolean,
+    @Query('search') search?: string,
+  ) {
+    return this.medicinaService.findAll(
+      limit,
+      page,
+      categoriaId,
+      presentacionId,
+      status,
+      search,
+    );
+  }
+
+  @Get('export')
+  async exportData(@Res() res) {
+    const { buffer, fileName } = await this.medicinaService.exportData();
+    res.header('Content-Disposition', `attachment; filename=${fileName}.xlsx`);
+    res.type(
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.send(buffer);
+  }
+
+  @Get('search/:input')
+  searchMedicina(@Param('input') input: string) {
+    return this.medicinaService.searchMedicina(input);
+  }
+
+  @Get('raw-medicinas')
+  getRawMedicinas() {
+    return this.medicinaService.rawMedicinas();
   }
 
   @Get(':id')
@@ -23,7 +67,10 @@ export class MedicinaController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMedicinaDto: UpdateMedicinaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateMedicinaDto: UpdateMedicinaDto,
+  ) {
     return this.medicinaService.update(+id, updateMedicinaDto);
   }
 
