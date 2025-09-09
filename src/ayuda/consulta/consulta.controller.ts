@@ -1,4 +1,14 @@
-import { Controller, Get, Res, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Res,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ConsultaService } from './consulta.service';
 import { CreateConsultaDto } from './dto/create-consulta.dto';
 import { UpdateConsultaDto } from './dto/update-consulta.dto';
@@ -21,9 +31,18 @@ export class ConsultaController {
     @Query('tipoId') tipoId?: number,
     @Query('userId') userId?: number,
     @Query('status') status?: boolean,
-    @Query('search') search?: string,) {
-    
-      return this.consultaService.findAll(limit, page, moduloId, prioridadId, tipoId, userId, status, search);
+    @Query('search') search?: string,
+  ) {
+    return this.consultaService.findAll(
+      limit,
+      page,
+      moduloId,
+      prioridadId,
+      tipoId,
+      userId,
+      status,
+      search,
+    );
   }
 
   @Get('export')
@@ -47,7 +66,10 @@ export class ConsultaController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateConsultaDto: UpdateConsultaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateConsultaDto: UpdateConsultaDto,
+  ) {
     return this.consultaService.update(+id, updateConsultaDto);
   }
 

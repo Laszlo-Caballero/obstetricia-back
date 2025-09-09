@@ -13,7 +13,7 @@ import { PresentacionService } from './presentacion.service';
 import { CreatePresentacionDto } from './dto/create-presentacion.dto';
 import { UpdatePresentacionDto } from './dto/update-presentacion.dto';
 
-@Controller('presentacion')
+@Controller('farmacia/presentacion')
 export class PresentacionController {
   constructor(private readonly presentacionService: PresentacionService) {}
 
@@ -42,7 +42,7 @@ export class PresentacionController {
     res.send(buffer);
   }
 
-  @Get('raw-presentacion')
+  @Get('raw-presentaciones')
   getRawpresentaciones() {
     return this.presentacionService.rawPresentaciones();
   }

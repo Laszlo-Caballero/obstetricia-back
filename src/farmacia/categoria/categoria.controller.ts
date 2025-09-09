@@ -13,7 +13,7 @@ import { CategoriaService } from './categoria.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { UpdateCategoriaDto } from './dto/update-categoria.dto';
 
-@Controller('categoria')
+@Controller('farmacia/categoria')
 export class CategoriaController {
   constructor(private readonly categoriaService: CategoriaService) {}
 
@@ -42,7 +42,7 @@ export class CategoriaController {
     res.send(buffer);
   }
 
-  @Get('raw-categoria')
+  @Get('raw-categorias')
   getRawcategorias() {
     return this.categoriaService.rawCategorias();
   }

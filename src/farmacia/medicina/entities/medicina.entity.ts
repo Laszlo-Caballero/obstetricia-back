@@ -5,7 +5,6 @@ import { RecetaMedicina } from '../../../farmacia/receta-medicina/entities/recet
 import {
   Column,
   Entity,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -27,6 +26,9 @@ export class Medicina {
 
   @Column()
   stock: number;
+
+  @Column({ type: 'date', default: () => 'GETDATE()' })
+  fechaCreacion: Date;
 
   @Column({ default: true })
   estado: boolean;
