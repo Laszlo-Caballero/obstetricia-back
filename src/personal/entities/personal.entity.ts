@@ -33,6 +33,9 @@ export class Personal {
   @Column({ type: 'date' })
   fechaNacimiento: Date;
 
+  @Column({ default: '' })
+  correo: string;
+
   @Column()
   sexo: string;
 

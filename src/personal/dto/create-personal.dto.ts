@@ -4,6 +4,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsEmail,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -50,6 +51,9 @@ export class CreatePersonalDto {
   @IsString()
   @IsNotEmpty()
   codigoColegio: string;
+
+  @IsEmail()
+  correo: string;
 
   @IsBoolean()
   @IsOptional()

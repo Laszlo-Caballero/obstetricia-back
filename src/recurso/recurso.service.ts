@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Recurso } from './entities/recurso.entity';
 import { Repository } from 'typeorm';
 import { RedisService } from 'src/redis/redis.service';
+import { join } from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class RecursoService {
@@ -14,12 +16,27 @@ export class RecursoService {
     private readonly redisService: RedisService,
   ) {}
 
-  async create(file: Express.Multer.File) {
-    const [fileName, ext] = file.filename.split('.');
+  async create(file: Express.Multer.File, destination?: string) {
+    const fix = Date.now();
+    const ext = file.originalname.split('.').pop();
+    const baseName = file.originalname.replace(/\.[^/.]+$/, '');
+    const name = `${baseName}-${fix}.${ext}`;
+
+    const safeFolder = (destination || '').replace(/[^a-zA-Z0-9_-]/g, '');
+    const dest = join(__dirname, '../../public', safeFolder || '');
+
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+
+    const newPath = join(dest, name);
+
+    fs.writeFileSync(newPath, file.buffer);
+
     const newRecurso = this.recursoRepository.create({
-      nombre: fileName,
+      nombre: name,
       extension: ext,
-      url: `/static/${file.filename}`,
+      url: destination ? `/static/${destination}/${name}` : `/static/${name}`,
     });
 
     await this.recursoRepository.insert(newRecurso);

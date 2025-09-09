@@ -188,6 +188,50 @@ export class AuthService {
     };
   }
 
+  async updateFoto(req: RequestUser, foto: Express.Multer.File) {
+    const foundUser = await this.authRepository.findOne({
+      where: { userId: req.user.userId },
+      relations: ['personal'],
+    });
+
+    if (!foundUser) {
+      throw new HttpException('User not found', 404);
+    }
+
+    const newRecurso = this.recursoRepository.create({
+      nombre: foto.filename,
+      extension: foto.filename.split('.').pop(),
+      url: `/static/foto/${foto.filename}`,
+    });
+
+    await this.recursoRepository.insert(newRecurso);
+
+    await this.authRepository.update(foundUser.userId, {
+      recurso: newRecurso,
+    });
+
+    const updatedUser = await this.authRepository.findOne({
+      where: { userId: req.user.userId },
+      relations: ['personal', 'role', 'personal.posta', 'recurso'],
+    });
+
+    const posta = updatedUser?.personal.posta.find(
+      (p) => p.postaId === req.user.postaId,
+    );
+
+    return {
+      status: 200,
+      message: 'Foto updated successfully',
+      data: {
+        ...updatedUser,
+        personal: {
+          ...updatedUser?.personal,
+          posta: posta ? posta : null,
+        },
+      },
+    };
+  }
+
   async registerAdmin() {
     const findRecurso = await this.recursoRepository.findOneBy({
       nombre: Like('%gato%'),
