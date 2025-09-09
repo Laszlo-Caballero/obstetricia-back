@@ -15,6 +15,7 @@ import { PostaService } from './posta.service';
 import { CreatePostaDto } from './dto/create-posta.dto';
 import { UpdatePostaDto } from './dto/update-posta.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FindByDistanceDto } from './dto/findByDistance.dto';
 // import { Auth } from 'src/auth/decorators/auth.decorator';
 // import { RolesEnum } from 'src/auth/enum/roles';
 
@@ -56,9 +57,9 @@ export class PostaController {
     res.send(buffer);
   }
 
-  @Get('raw-postas')
-  getRawPostas() {
-    return this.postaService.rawPostas();
+  @Post('find-by-distance')
+  findByDistance(@Body() body: FindByDistanceDto) {
+    return this.postaService.findByDistance(body);
   }
 
   @Get('search/:input')

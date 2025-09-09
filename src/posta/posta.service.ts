@@ -6,16 +6,14 @@ import { Posta } from './entities/posta.entity';
 import { Repository, Like } from 'typeorm';
 import { Workbook } from 'exceljs';
 import { Region } from './entities/region.entity';
-import { RedisService } from 'src/redis/redis.service';
 import { Provincia } from './entities/provincia.entity';
 import { Distrito } from './entities/distrito.entity';
 import { PostaType } from './type/type';
 import { parse } from 'date-fns';
+import { FindByDistanceDto } from './dto/findByDistance.dto';
 
 @Injectable()
 export class PostaService {
-  private readonly postaKey = 'posta';
-
   constructor(
     @InjectRepository(Posta)
     private readonly postaRepository: Repository<Posta>,
@@ -25,7 +23,6 @@ export class PostaService {
     private readonly provinciaRepository: Repository<Provincia>,
     @InjectRepository(Distrito)
     private readonly distritoRepository: Repository<Distrito>,
-    private readonly redisService: RedisService,
   ) {}
 
   async create(createPostaDto: CreatePostaDto) {
@@ -60,9 +57,6 @@ export class PostaService {
     });
 
     await this.postaRepository.insert(posta);
-    const findAllPosta = await this.postaRepository.find();
-
-    await this.redisService.set('postas', findAllPosta);
 
     return {
       status: 200,
@@ -173,10 +167,6 @@ export class PostaService {
       }),
     );
 
-    const findAllPosta = await this.postaRepository.find();
-
-    await this.redisService.set('postas', findAllPosta);
-
     const [findFilterPosta, totalItems] =
       await this.postaRepository.findAndCount({
         skip: 0,
@@ -239,33 +229,6 @@ export class PostaService {
     };
   }
 
-  async rawPostas() {
-    const cachePostas = await this.redisService.get<Posta[]>('postas');
-
-    if (cachePostas) {
-      return {
-        status: 200,
-        message: 'Post retrieved successfully from cache',
-        data: cachePostas.map((posta) => ({
-          lat: Number(posta.lat),
-          lng: Number(posta.lng),
-        })),
-      };
-    }
-
-    const dbPostas = await this.postaRepository.find();
-    await this.redisService.set('postas', dbPostas);
-
-    return {
-      status: 200,
-      message: 'Post retrieved successfully from database',
-      data: dbPostas.map((posta) => ({
-        lat: Number(posta.lat),
-        lng: Number(posta.lng),
-      })),
-    };
-  }
-
   async findOne(id: number) {
     const findPosta = await this.postaRepository.findOneBy({ postaId: id });
 
@@ -289,10 +252,6 @@ export class PostaService {
 
     await this.postaRepository.update(id, updatePostaDto);
 
-    const findAllPosta = await this.postaRepository.find();
-
-    await this.redisService.set('postas', findAllPosta);
-
     return {
       status: 200,
       message: 'Post updated successfully',
@@ -308,9 +267,7 @@ export class PostaService {
     }
 
     await this.postaRepository.update(id, { estado: false });
-    const findAllPosta = await this.postaRepository.find();
 
-    await this.redisService.set('postas', findAllPosta);
     return {
       status: 200,
       message: 'Post removed successfully',
@@ -441,5 +398,18 @@ export class PostaService {
     const buffer = await workbook.xlsx.writeBuffer();
 
     return { buffer, fileName };
+  }
+
+  async findByDistance(body: FindByDistanceDto) {
+    const { lat, lng, distance } = body;
+
+    const rawData = await this.postaRepository.query(
+      `
+    exec find_by_distance @Distance=@0, @LAT=@1, @LNG=@2
+  `,
+      [distance, lat, lng],
+    );
+
+    return rawData;
   }
 }
