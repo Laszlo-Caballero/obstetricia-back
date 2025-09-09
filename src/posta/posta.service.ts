@@ -147,6 +147,10 @@ export class PostaService {
           return;
         }
 
+        if (item.lat === '' || item.lng === '') {
+          return;
+        }
+
         const newPosta = this.postaRepository.create({
           ipress: item.ipress,
           ruc: item.ruc,
@@ -410,6 +414,10 @@ export class PostaService {
       [distance, lat, lng],
     );
 
-    return rawData;
+    return {
+      status: 200,
+      message: 'Postas retrieved successfully',
+      data: rawData,
+    };
   }
 }
