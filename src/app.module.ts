@@ -51,7 +51,6 @@ import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/static',
     }),
-
     RedisModule,
     AuthModule,
     RoleModule,
