@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePersonalDto } from './dto/create-personal.dto';
 import { UpdatePersonalDto } from './dto/update-personal.dto';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Personal } from './entities/personal.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { Posta } from 'src/posta/entities/posta.entity';
@@ -69,12 +69,30 @@ export class PersonalService {
     };
   }
 
-  async findAll() {
-    const personal = await this.personalRepository.find();
+  async findAll(
+    limit: number = 10,
+    page: number = 1,
+    search?: string,
+    tipoPersonalId?: number,
+  ) {
+    const [personal, totalItems] = await this.personalRepository.findAndCount({
+      where: {
+        ...(search && { nombres: Like(`%${search}%`) }),
+        ...(tipoPersonalId && { tipoPersonal: { tipoPersonalId } }),
+      },
+      relations: ['turno', 'tipoPersonal', 'posta', 'user'],
+      take: limit,
+      skip: (page - 1) * limit,
+    });
     return {
       message: 'Personal encontrado exitosamente',
       status: 200,
       data: personal,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+      },
     };
   }
 
