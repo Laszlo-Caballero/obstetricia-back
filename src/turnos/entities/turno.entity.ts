@@ -1,3 +1,4 @@
+import { Cita } from '../../cita/entities/cita.entity';
 import { Personal } from '../../personal/entities/personal.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -17,4 +18,7 @@ export class Turno {
 
   @OneToMany(() => Personal, (personal) => personal.turno)
   personal: Personal[];
+
+  @OneToMany(() => Cita, (cita) => cita.turno)
+  citas: Cita[];
 }

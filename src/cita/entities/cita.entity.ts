@@ -10,9 +10,12 @@ import {
   ManyToOne,
   JoinTable,
   Relation,
+  Column,
 } from 'typeorm';
 import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 import { Personal } from '../../personal/entities/personal.entity';
+import { Turno } from '../../turnos/entities/turno.entity';
+import { Programa } from '../../programa/entities/programa.entity';
 
 @Entity()
 export class Cita {
@@ -39,4 +42,19 @@ export class Cita {
     name: 'diagnostico-cita',
   })
   diagnosticos: Diagnostico[];
+
+  @ManyToOne(() => Turno, (turno) => turno.citas)
+  turno: Turno;
+
+  @ManyToOne(() => Programa, (programa) => programa.citas)
+  programa: Programa;
+
+  @Column()
+  fecha: Date;
+
+  @Column({ default: '' })
+  nota: string;
+
+  @Column({ default: true })
+  estado: boolean;
 }

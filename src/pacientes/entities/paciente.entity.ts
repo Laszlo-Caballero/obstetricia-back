@@ -22,7 +22,16 @@ export class Paciente {
   fecha_nacimiento: Date;
 
   @Column()
-  estado_civil: string;
+  direccion: string;
+
+  @Column()
+  departamento: string;
+
+  @Column()
+  provincia: string;
+
+  @Column()
+  distrito: string;
 
   @Column({ default: true })
   estado: boolean;

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Cita } from '../../cita/entities/cita.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Programa {
@@ -13,4 +14,7 @@ export class Programa {
 
   @Column({ default: true })
   estado: boolean;
+
+  @OneToMany(() => Cita, (cita) => cita.programa)
+  citas: Cita[];
 }
