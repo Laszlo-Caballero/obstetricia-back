@@ -11,6 +11,8 @@ import { SetRoleDto } from './dto/setRole.dto';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
 import { RequestUser } from './interface/type';
+import { TokenDto } from './dto/token.dto';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -25,6 +27,25 @@ export class AuthService {
     private readonly personalRepository: Repository<Personal>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async verifyCaptcha(tokenDto: TokenDto) {
+    try {
+      const res = await axios.post(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.CAPTCHA_SECRET_KEY}&response=${tokenDto.token}`,
+      );
+      if (!res.data.success) {
+        throw new HttpException('Captcha verification failed', 400);
+      }
+
+      return {
+        status: 200,
+        message: 'Captcha verified successfully',
+        data: null,
+      };
+    } catch {
+      throw new HttpException('Captcha verification failed', 400);
+    }
+  }
 
   async getProfile(data: RequestUser) {
     const foundUser = await this.authRepository.findOne({

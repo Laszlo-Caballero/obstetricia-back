@@ -18,6 +18,7 @@ import { RequestUser } from './interface/type';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
+import { TokenDto } from './dto/token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +37,11 @@ export class AuthController {
   @Post('admin')
   registerAdmin() {
     return this.authService.registerAdmin();
+  }
+
+  @Post('verify-captcha')
+  verifyCaptcha(@Body() tokenDto: TokenDto) {
+    return this.authService.verifyCaptcha(tokenDto);
   }
 
   @Auth(RolesEnum.Administrador)
