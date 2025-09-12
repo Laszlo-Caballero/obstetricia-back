@@ -51,6 +51,9 @@ export class Personal {
   @Column({ default: true })
   estado: boolean;
 
+  @Column({ default: '' })
+  nota: string;
+
   @OneToOne(() => Auth, (auth) => auth.personal)
   @JoinColumn({ name: 'userId' })
   user: Relation<Auth>;

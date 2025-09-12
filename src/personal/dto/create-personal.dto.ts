@@ -55,6 +55,10 @@ export class CreatePersonalDto {
   @IsEmail()
   correo: string;
 
+  @IsString()
+  @IsOptional()
+  nota: string;
+
   @IsBoolean()
   @IsOptional()
   estado?: boolean = true;
