@@ -27,6 +27,7 @@ import { RecursoModule } from './recurso/recurso.module';
 import { PresentacionModule } from './farmacia/presentacion/presentacion.module';
 import { CategoriaModule } from './farmacia/categoria/categoria.module';
 import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina.module';
+import { FilesModule } from './galeria/files.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina
     PresentacionModule,
     CategoriaModule,
     RecetaMedicinaModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [RedisService],
