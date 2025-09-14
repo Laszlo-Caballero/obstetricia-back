@@ -19,6 +19,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { join } from 'path';
 import { TokenDto } from './dto/token.dto';
+import { ProfileDto } from './dto/profile.dto';
+import { PasswordDto } from './dto/password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -82,5 +84,17 @@ export class AuthController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.authService.updateFoto(req, file);
+  }
+
+  @Auth()
+  @Patch('update-profile')
+  updateProfile(@Req() req: RequestUser, @Body() body: ProfileDto) {
+    return this.authService.updateProfile(body, req);
+  }
+
+  @Auth()
+  @Patch('update-password')
+  updatePassword(@Req() req: RequestUser, @Body() body: PasswordDto) {
+    return this.authService.changePassword(req, body);
   }
 }

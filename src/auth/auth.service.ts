@@ -13,6 +13,8 @@ import { Recurso } from 'src/recurso/entities/recurso.entity';
 import { RequestUser } from './interface/type';
 import { TokenDto } from './dto/token.dto';
 import axios from 'axios';
+import { ProfileDto } from './dto/profile.dto';
+import { PasswordDto } from './dto/password.dto';
 
 @Injectable()
 export class AuthService {
@@ -318,6 +320,57 @@ export class AuthService {
       message: 'Usuario validado correctamente',
       status: true,
       role: data.user.role,
+    };
+  }
+
+  async updateProfile(data: ProfileDto, req: RequestUser) {
+    const foundUser = await this.personalRepository.findOne({
+      where: { user: { userId: req.user.userId } },
+    });
+    if (!foundUser) {
+      throw new HttpException('User not found', 404);
+    }
+
+    await this.personalRepository.update(foundUser.personalId, {
+      ...data,
+    });
+    const updatedUser = await this.authRepository.findOne({
+      where: { userId: req.user.userId },
+    });
+    return {
+      status: 200,
+      message: 'Profile updated successfully',
+      data: updatedUser,
+    };
+  }
+
+  async changePassword(req: RequestUser, passwordDto: PasswordDto) {
+    const { previousPassword, newPassword } = passwordDto;
+
+    const foundUser = await this.authRepository.findOne({
+      where: { userId: req.user.userId },
+    });
+
+    if (!foundUser) {
+      throw new HttpException('User not found', 404);
+    }
+
+    const isPasswordValid = await compare(previousPassword, foundUser.password);
+
+    if (!isPasswordValid) {
+      throw new HttpException('Previous password is incorrect', 400);
+    }
+
+    const hashedNewPassword = await hash(newPassword, 10);
+
+    await this.authRepository.update(foundUser.userId, {
+      password: hashedNewPassword,
+    });
+
+    return {
+      status: 200,
+      message: 'Password changed successfully',
+      data: null,
     };
   }
 }
