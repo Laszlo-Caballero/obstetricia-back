@@ -91,8 +91,8 @@ export class FilesService {
 
   getFilePath(dir: string) {
     const preDir = this.parsePath(dir);
-    const parseDir = preDir.replace('_', ' ');
-    const decodedDir = decodeURIComponent(parseDir);
+    // const parseDir = preDir.replace('_', ' ');
+    const decodedDir = decodeURIComponent(preDir);
     const path = join(this.path, decodedDir);
 
     try {

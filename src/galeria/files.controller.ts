@@ -77,9 +77,9 @@ export class FilesController {
     return this.filesServices.removeFiles(path, files);
   }
 
-  @Get('download')
-  downloadFileRoot(@Res() res: Response) {
-    const filePath = this.filesServices.getFilePath('');
+  @Get('download/:file')
+  downloadFileRoot(@Param('file') file: string, @Res() res: Response) {
+    const filePath = this.filesServices.getFilePath(file);
     res.sendFile(filePath);
   }
 
