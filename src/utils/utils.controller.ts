@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { UtilsService } from './utils.service';
 
 @Controller('utils')
@@ -13,6 +13,16 @@ export class UtilsController {
   @Get('provincias')
   async findAllProvincias() {
     return this.utilsService.findAllProvincias();
+  }
+
+  @Get('provincias/:idRegion')
+  async findProvinciaByRegion(@Param('idRegion') idRegion: number) {
+    return this.utilsService.findProvinciaByRegion(idRegion);
+  }
+
+  @Get('distritos/:idProvincia')
+  async findDistritoByProvincia(@Param('idProvincia') idProvincia: number) {
+    return this.utilsService.findDistritoByProvincia(idProvincia);
   }
 
   @Get('distritos')
