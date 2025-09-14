@@ -234,7 +234,10 @@ export class PostaService {
   }
 
   async findOne(id: number) {
-    const findPosta = await this.postaRepository.findOneBy({ postaId: id });
+    const findPosta = await this.postaRepository.findOne({
+      where: { postaId: id },
+      relations: ['region', 'provincia', 'distrito'],
+    });
 
     if (!findPosta) {
       throw new HttpException('Post not found', 404);
@@ -248,13 +251,41 @@ export class PostaService {
   }
 
   async update(id: number, updatePostaDto: UpdatePostaDto) {
+    const { regionId, provinciaId, distritoId, ...rest } = updatePostaDto;
+
+    const findRegion = await this.regionRepository.findOneBy({ regionId });
+
+    if (!findRegion) {
+      throw new HttpException('Region not found', 404);
+    }
+
+    const findProvincia = await this.provinciaRepository.findOneBy({
+      provinciaId,
+    });
+    if (!findProvincia) {
+      throw new HttpException('Provincia not found', 404);
+    }
+
+    const findDistrito = await this.distritoRepository.findOneBy({
+      distritoId,
+    });
+
+    if (!findDistrito) {
+      throw new HttpException('Distrito not found', 404);
+    }
+
     const findPosta = await this.postaRepository.findOneBy({ postaId: id });
 
     if (!findPosta) {
       throw new HttpException('Post not found', 404);
     }
 
-    await this.postaRepository.update(id, updatePostaDto);
+    await this.postaRepository.update(id, {
+      ...rest,
+      region: findRegion,
+      provincia: findProvincia,
+      distrito: findDistrito,
+    });
 
     return {
       status: 200,
