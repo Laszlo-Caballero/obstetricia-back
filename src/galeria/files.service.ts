@@ -43,8 +43,14 @@ export class FilesService {
     };
   }
 
+  private parsePath(dir: string) {
+    return dir.split(',').join('/');
+  }
+
   async allFiles(dir: string) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+
+    const decodedDir = decodeURIComponent(parsedDir);
 
     const path = join(this.path, decodedDir);
 
@@ -64,7 +70,8 @@ export class FilesService {
   }
 
   async allFolders(dir: string) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
 
     const path = join(this.path, decodedDir);
 
@@ -83,7 +90,8 @@ export class FilesService {
   }
 
   getFilePath(dir: string) {
-    const parseDir = dir.replace('_', ' ');
+    const preDir = this.parsePath(dir);
+    const parseDir = preDir.replace('_', ' ');
     const decodedDir = decodeURIComponent(parseDir);
     const path = join(this.path, decodedDir);
 
@@ -100,15 +108,20 @@ export class FilesService {
   }
 
   async createFolder(dir: string, name: string) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
 
     const path = join(this.path, decodedDir, name);
 
     try {
       await mkdir(path);
+
+      const { data } = await this.allFiles(dir);
+
       return {
         message: 'Folder created',
         status: 201,
+        data,
       };
     } catch {
       throw new BadRequestException('Directory as already exist');
@@ -116,7 +129,8 @@ export class FilesService {
   }
 
   async uploadFiles(dir: string, files: Express.Multer.File[]) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
 
     const path = join(this.path, decodedDir);
 
@@ -131,9 +145,11 @@ export class FilesService {
         const filePath = join(path, file.originalname);
         await writeFile(filePath, file.buffer);
       }
+      const { data } = await this.allFiles(dir);
       return {
         message: 'Files uploaded',
         status: 201,
+        data,
       };
     } catch {
       throw new BadRequestException('Directory not found');
@@ -141,7 +157,8 @@ export class FilesService {
   }
 
   async removeFiles(dir: string, file: DeleteFilesDto) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
 
     const path = join(this.path, decodedDir);
 
@@ -155,9 +172,12 @@ export class FilesService {
       if (file.name.includes('.')) {
         const filepath = join(path, decodeURIComponent(file.name));
         await unlink(filepath);
+
+        const { data } = await this.allFiles(dir);
         return {
           message: 'File removed',
-          statusCode: 200,
+          status: 200,
+          data,
         };
       }
 
@@ -167,9 +187,11 @@ export class FilesService {
         force: true,
       });
 
+      const { data } = await this.allFiles(dir);
       return {
         message: 'Folder removed',
         status: 200,
+        data,
       };
     } catch {
       throw new BadRequestException('File not found');
@@ -177,7 +199,8 @@ export class FilesService {
   }
 
   async renameFile(dir: string, file: RenameFileDto) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
     const path = join(this.path, decodedDir);
 
     const isExist = existsSync(path);
@@ -191,9 +214,12 @@ export class FilesService {
 
       await rename(oldPath, newPath);
 
+      const { data } = await this.allFiles(dir);
+
       return {
         message: 'File renamed',
-        statusCode: 200,
+        status: 200,
+        data,
       };
     } catch {
       throw new BadRequestException('File not found');
@@ -201,7 +227,8 @@ export class FilesService {
   }
 
   async moveFile(dir: string, file: MoveFileDto) {
-    const decodedDir = decodeURIComponent(dir);
+    const parsedDir = this.parsePath(dir);
+    const decodedDir = decodeURIComponent(parsedDir);
     const path = join(this.path, decodedDir);
 
     const isExist = existsSync(path);
@@ -223,9 +250,11 @@ export class FilesService {
 
       await rename(oldPath, newPath);
 
+      const { data } = await this.allFiles(dir);
       return {
         message: 'File moved',
         status: 200,
+        data,
       };
     } catch {
       throw new BadRequestException('File not found');
