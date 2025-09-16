@@ -28,6 +28,8 @@ import { PresentacionModule } from './farmacia/presentacion/presentacion.module'
 import { CategoriaModule } from './farmacia/categoria/categoria.module';
 import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina.module';
 import { FilesModule } from './galeria/files.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { DocumentacionModule } from './documentacion/documentacion.module';
 
 @Module({
   imports: [
@@ -52,6 +54,10 @@ import { FilesModule } from './galeria/files.module';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/static',
     }),
+
+    MongooseModule.forRoot(
+      `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`,
+    ),
     RedisModule,
     AuthModule,
     RoleModule,
@@ -76,6 +82,7 @@ import { FilesModule } from './galeria/files.module';
     CategoriaModule,
     RecetaMedicinaModule,
     FilesModule,
+    DocumentacionModule,
   ],
   controllers: [],
   providers: [RedisService],
