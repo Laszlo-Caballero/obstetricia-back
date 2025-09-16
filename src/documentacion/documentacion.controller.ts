@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Req,
+  Query,
 } from '@nestjs/common';
 import { DocumentacionService } from './documentacion.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -45,8 +46,8 @@ export class DocumentacionController {
 
   @Auth(RolesEnum.Administrador)
   @Get()
-  findAll() {
-    return this.documentacionService.findAll();
+  findAll(@Query('order') order: 'ASC' | 'DESC' = 'DESC') {
+    return this.documentacionService.findAll(order);
   }
 
   @Auth(RolesEnum.Administrador)

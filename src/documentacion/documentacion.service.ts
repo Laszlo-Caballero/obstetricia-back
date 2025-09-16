@@ -45,6 +45,11 @@ export class DocumentacionService {
       throw new HttpException('File is required', 400);
     }
 
+    const ext = file.originalname.split('.').pop();
+    if (ext !== 'pdf') {
+      throw new HttpException('File must be a PDF', 400);
+    }
+
     const user = await this.authRepository.findOne({
       where: { userId: req.user.userId },
       relations: ['personal'],
@@ -63,7 +68,7 @@ export class DocumentacionService {
     const newRecurso = this.recursoRepository.create({
       nombre: file.filename,
       extension: file.filename.split('.').pop(),
-      url: `/static/documentos/${file.filename}`,
+      url: `/static/documentacion/${file.filename}`,
     });
 
     await this.recursoRepository.insert(newRecurso);
@@ -91,15 +96,21 @@ export class DocumentacionService {
     };
   }
 
-  async findAll() {
+  async findAll(order: string = 'DESC') {
     const cache = await this.redisService.get<Documentacion[]>(
       this.keyDocumentacion,
     );
+
     if (cache) {
       return {
         status: 200,
         message: 'Documentacion retrieved from cache',
-        data: cache,
+        data: cache.sort((a, b) => {
+          if (order === 'ASC') {
+            return a.version - b.version;
+          }
+          return b.version - a.version;
+        }),
       };
     }
 
@@ -109,7 +120,12 @@ export class DocumentacionService {
     return {
       status: 200,
       message: 'Documentacion retrieved from database',
-      data: findAll,
+      data: findAll.sort((a, b) => {
+        if (order === 'ASC') {
+          return a.version - b.version;
+        }
+        return b.version - a.version;
+      }),
     };
   }
 
