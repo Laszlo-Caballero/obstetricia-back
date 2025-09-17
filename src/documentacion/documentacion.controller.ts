@@ -8,6 +8,7 @@ import {
   UploadedFile,
   Req,
   Query,
+  Res,
 } from '@nestjs/common';
 import { DocumentacionService } from './documentacion.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -16,6 +17,7 @@ import { RolesEnum } from 'src/auth/enum/roles';
 import { RequestUser } from 'src/auth/interface/type';
 import { diskStorage } from 'multer';
 import { join } from 'path';
+import { Response } from 'express';
 
 @Controller('documentacion')
 export class DocumentacionController {
@@ -60,5 +62,20 @@ export class DocumentacionController {
   @Get('last')
   findLast() {
     return this.documentacionService.findLast();
+  }
+
+  @Auth()
+  @Get('download-last')
+  async downloadLast(@Res() res: Response) {
+    const { fileStream, version } =
+      await this.documentacionService.donwloadLast();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=documentacion-v${version}.pdf`,
+    );
+
+    fileStream.pipe(res);
   }
 }

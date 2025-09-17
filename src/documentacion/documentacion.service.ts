@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { RequestUser } from 'src/auth/interface/type';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
 import { RedisService } from 'src/redis/redis.service';
+import { join } from 'node:path';
+import { createReadStream } from 'node:fs';
 
 @Injectable()
 export class DocumentacionService {
@@ -163,5 +165,34 @@ export class DocumentacionService {
       message: 'Documentacion retrieved successfully',
       data: documentacion,
     };
+  }
+
+  async donwloadLast() {
+    const documentacion = await this.documentacionModel
+      .findOne()
+      .sort({ version: -1 })
+      .exec();
+    if (!documentacion) {
+      throw new HttpException('Documentacion not found', 404);
+    }
+
+    const filePath = join(
+      __dirname,
+      '..',
+      '..',
+      'public',
+      'documentacion',
+      documentacion.resource.nombre,
+    );
+
+    try {
+      const fileStream = createReadStream(filePath);
+      return {
+        fileStream,
+        version: documentacion.version,
+      };
+    } catch {
+      throw new HttpException('Error downloading documentacion', 500);
+    }
   }
 }
