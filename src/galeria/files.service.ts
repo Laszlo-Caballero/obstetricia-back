@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   readdir,
@@ -17,9 +18,17 @@ import { DeleteFilesDto } from './dto/deleteFiles.dto';
 import { accessSync } from 'node:fs';
 import { RenameFileDto } from './dto/renameFile.dto';
 import { MoveFileDto } from './dto/file.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Folder } from './schema/folder.schema';
+import { Model } from 'mongoose';
+import { CreateFolderDto } from './dto/createFolder.dto';
+import { RequestUser } from 'src/auth/interface/type';
+import { RolesEnum } from 'src/auth/enum/roles';
 
 @Injectable()
 export class FilesService {
+  constructor(@InjectModel(Folder.name) private folderModel: Model<Folder>) {}
+
   private path = join(__dirname, '../../public');
 
   private orderFiles(files: string[]) {
@@ -69,7 +78,31 @@ export class FilesService {
     }
   }
 
-  async allFolders(dir: string) {
+  async allFolders(dir: string, req: RequestUser) {
+    let autorize = true;
+
+    const folder = await this.folderModel.findOne({ name: dir });
+
+    if (!folder) {
+      autorize = false;
+      throw new UnauthorizedException('No autorizado');
+    }
+
+    const rolesUser = req.user.role as RolesEnum;
+    const isRoleAll = folder.role.includes(RolesEnum.All);
+    if (!isRoleAll) {
+      console.log('No autorizado');
+      autorize = false;
+    }
+
+    const isAutorize = folder.role.includes(rolesUser);
+    if (!isAutorize && !isRoleAll) {
+      console.log('No autorizado');
+      autorize = false;
+    }
+
+    console.log(isAutorize, autorize);
+
     const parsedDir = this.parsePath(dir);
     const decodedDir = decodeURIComponent(parsedDir);
 
@@ -107,7 +140,7 @@ export class FilesService {
     }
   }
 
-  async createFolder(dir: string, name: string) {
+  async createFolder(dir: string, { name, role }: CreateFolderDto) {
     const parsedDir = this.parsePath(dir);
     const decodedDir = decodeURIComponent(parsedDir);
 
@@ -125,6 +158,9 @@ export class FilesService {
       };
     } catch {
       throw new BadRequestException('Directory as already exist');
+    } finally {
+      const newFolder = new this.folderModel({ name, role });
+      await newFolder.save();
     }
   }
 
