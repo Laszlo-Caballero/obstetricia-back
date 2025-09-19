@@ -8,6 +8,7 @@ import { Categoria } from '../categoria/entities/categoria.entity';
 import { Presentacion } from '../presentacion/entities/presentacion.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Workbook } from 'exceljs';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Injectable()
 export class MedicinaService {
@@ -20,17 +21,24 @@ export class MedicinaService {
     private readonly categoriaRepository: Repository<Categoria>,
     @InjectRepository(Presentacion)
     private readonly presentacionRepository: Repository<Presentacion>,
+    @InjectRepository(Recurso)
+    private readonly recursoRepository: Repository<Recurso>,
     private readonly redisService: RedisService,
   ) {}
 
   async create(createMedicinaDto: CreateMedicinaDto) {
-    const { categoriaId, presentacionId, ...rest } = createMedicinaDto;
+    const { categoriaId, presentacionId, recursoId, ...rest } =
+      createMedicinaDto;
 
     const findCategoria = await this.categoriaRepository.findOneBy({
       categoriaId,
     });
     const findPresentacion = await this.presentacionRepository.findOneBy({
       presentacionId,
+    });
+
+    const findRecurso = await this.recursoRepository.findOneBy({
+      recursoId,
     });
 
     if (!findCategoria) {
@@ -40,16 +48,16 @@ export class MedicinaService {
       throw new HttpException('Appearance not found', 404);
     }
 
+    if (!findRecurso) {
+      throw new HttpException('Resource not found', 404);
+    }
+
     const medicina = this.medicinaRepository.create({
       ...rest,
       categoria: findCategoria,
       presentacion: findPresentacion,
+      recurso: findRecurso,
     });
-
-    await this.medicinaRepository.insert(medicina);
-    const findAllMedicina = await this.medicinaRepository.find();
-
-    await this.redisService.set('medicina', findAllMedicina);
 
     return {
       status: 200,

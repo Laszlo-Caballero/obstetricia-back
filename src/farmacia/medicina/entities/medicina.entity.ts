@@ -1,3 +1,4 @@
+import { Recurso } from '../../../recurso/entities/recurso.entity';
 import { Categoria } from '../../../farmacia/categoria/entities/categoria.entity';
 import { Presentacion } from '../../../farmacia/presentacion/entities/presentacion.entity';
 import { RecetaMedicina } from '../../../farmacia/receta-medicina/entities/receta-medicina.entity';
@@ -27,6 +28,18 @@ export class Medicina {
   @Column()
   stock: number;
 
+  @Column()
+  stockMinimo: number;
+
+  @Column()
+  dosis: string;
+
+  @Column()
+  unidades: number;
+
+  @Column()
+  necesitaReceta: boolean;
+
   @Column({ type: 'date', default: () => 'GETDATE()' })
   fechaCreacion: Date;
 
@@ -41,4 +54,7 @@ export class Medicina {
 
   @OneToMany(() => RecetaMedicina, (recetamedicina) => recetamedicina.medicina)
   detalles: RecetaMedicina[];
+
+  @ManyToOne(() => Recurso, (recurso) => recurso.medicinas)
+  recurso: Recurso;
 }

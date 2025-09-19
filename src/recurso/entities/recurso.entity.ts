@@ -1,3 +1,4 @@
+import { Medicina } from '../../farmacia/medicina/entities/medicina.entity';
 import { Auth } from '../../auth/entities/auth.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -20,4 +21,7 @@ export class Recurso {
 
   @OneToMany(() => Auth, (auth) => auth.recurso)
   users: Auth[];
+
+  @OneToMany(() => Medicina, (medicina) => medicina.recurso)
+  medicinas: Medicina[];
 }
