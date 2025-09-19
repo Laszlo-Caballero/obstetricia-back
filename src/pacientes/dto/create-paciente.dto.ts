@@ -50,6 +50,15 @@ export class CreatePacienteDto {
   @IsNotEmpty()
   distrito: string;
 
+  @IsString()
+  @MinLength(9)
+  @MaxLength(9)
+  telefono: string;
+
+  @IsString()
+  @IsOptional()
+  nota: string;
+
   @IsBoolean()
   @IsOptional()
   estado?: boolean = true;

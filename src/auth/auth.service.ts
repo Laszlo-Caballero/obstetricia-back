@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { Auth } from './entities/auth.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -257,7 +257,7 @@ export class AuthService {
 
   async registerAdmin() {
     const findRecurso = await this.recursoRepository.findOneBy({
-      nombre: Like('%gato%'),
+      nombre: 'gato',
     });
     if (!findRecurso) {
       throw new HttpException('Default recurso not found', 404);

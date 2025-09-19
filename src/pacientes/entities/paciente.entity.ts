@@ -21,6 +21,12 @@ export class Paciente {
   @Column()
   fecha_nacimiento: Date;
 
+  @Column({ default: '' })
+  telefono: string;
+
+  @Column({ default: '' })
+  nota: string;
+
   @Column()
   direccion: string;
 
