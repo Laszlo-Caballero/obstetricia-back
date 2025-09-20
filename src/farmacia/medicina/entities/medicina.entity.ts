@@ -19,7 +19,8 @@ export class Medicina {
   @Column()
   nombre: string;
 
-  @Column()
+  //TODO: QUITAR EL DEFAULT
+  @Column({ type: 'text', default: '' })
   descripcion: string;
 
   @Column()

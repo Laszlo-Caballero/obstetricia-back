@@ -51,6 +51,41 @@ export class RecursoService {
     };
   }
 
+  async createOne(file: Express.Multer.File, destination?: string) {
+    const fix = Date.now();
+    const ext = file.originalname.split('.').pop();
+    const baseName = file.originalname.replace(/\.[^/.]+$/, '');
+    const name = `${baseName}-${fix}.${ext}`;
+
+    const safeFolder = (destination || '').replace(/[^a-zA-Z0-9_-]/g, '');
+    const dest = join(__dirname, '../../public', safeFolder || '');
+
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+
+    const newPath = join(dest, name);
+
+    fs.writeFileSync(newPath, file.buffer);
+
+    const newRecurso = this.recursoRepository.create({
+      nombre: name,
+      extension: ext,
+      url: destination ? `/static/${destination}/${name}` : `/static/${name}`,
+    });
+
+    await this.recursoRepository.insert(newRecurso);
+
+    const findAll = await this.recursoRepository.find();
+    await this.redisService.set(this.recursoKey, findAll);
+
+    return {
+      message: 'Recurso creado exitosamente',
+      status: 200,
+      data: newRecurso,
+    };
+  }
+
   async findAll() {
     const cachedData = await this.redisService.get(this.recursoKey);
     if (cachedData) {

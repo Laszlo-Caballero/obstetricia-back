@@ -59,6 +59,8 @@ export class MedicinaService {
       recurso: findRecurso,
     });
 
+    await this.medicinaRepository.insert(medicina);
+
     return {
       status: 200,
       message: 'Medicine created successfully',
@@ -76,7 +78,7 @@ export class MedicinaService {
   ) {
     const [dbMedicina, totalItems] = await this.medicinaRepository.findAndCount(
       {
-        relations: ['categoria', 'presentacion'],
+        relations: ['categoria', 'presentacion', 'recurso'],
         take: limit,
         skip: (page - 1) * limit,
         where: {

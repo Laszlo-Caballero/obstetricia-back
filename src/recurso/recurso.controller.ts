@@ -19,6 +19,11 @@ export class RecursoController {
   create(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     return this.recursoService.create(file, body.destination as string);
   }
+  @Post('one')
+  @UseInterceptors(FileInterceptor('file'))
+  createOne(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
+    return this.recursoService.createOne(file, body.destination as string);
+  }
 
   @Get()
   findAll() {
