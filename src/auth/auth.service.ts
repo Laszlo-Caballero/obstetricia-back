@@ -16,10 +16,13 @@ import axios from 'axios';
 import { ProfileDto } from './dto/profile.dto';
 import { PasswordDto } from './dto/password.dto';
 import { RedisService } from 'src/redis/redis.service';
-import { TwilioService } from 'nestjs-twilio';
+import { Resend } from 'resend';
+import { emailTemplate } from './template/template';
 
 @Injectable()
 export class AuthService {
+  private readonly resend: Resend;
+
   constructor(
     @InjectRepository(Auth)
     private readonly authRepository: Repository<Auth>,
@@ -31,8 +34,9 @@ export class AuthService {
     private readonly personalRepository: Repository<Personal>,
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService,
-    private readonly twilioService: TwilioService,
-  ) {}
+  ) {
+    this.resend = new Resend(process.env.RESEND_API_KEY);
+  }
 
   async verifyCaptcha(tokenDto: TokenDto) {
     try {
@@ -157,11 +161,19 @@ export class AuthService {
       throw new HttpException('Posta not found', 404);
     }
 
-    await this.twilioService.client.messages.create({
-      body: `Nuevo inicio de sesión en tu cuenta, si no fuiste tú, por favor contacta con soporte.`,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+51${foundUser.personal.telefono}`,
+    const { error } = await this.resend.emails.send({
+      from: 'Obstetra <noreply@resend.dev>',
+      to: foundUser.personal.correo,
+      subject: 'Nuevo inicio de sesión',
+      html: emailTemplate(),
     });
+
+    if (error) {
+      throw new HttpException(
+        `Error al enviar el correo: ${error.message}`,
+        500,
+      );
+    }
 
     const payload = {
       userId: foundUser.userId,
