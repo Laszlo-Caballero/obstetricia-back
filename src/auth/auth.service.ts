@@ -15,6 +15,8 @@ import { TokenDto } from './dto/token.dto';
 import axios from 'axios';
 import { ProfileDto } from './dto/profile.dto';
 import { PasswordDto } from './dto/password.dto';
+import { RedisService } from 'src/redis/redis.service';
+import { TwilioService } from 'nestjs-twilio';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +30,8 @@ export class AuthService {
     @InjectRepository(Personal)
     private readonly personalRepository: Repository<Personal>,
     private readonly jwtService: JwtService,
+    private readonly redisService: RedisService,
+    private readonly twilioService: TwilioService,
   ) {}
 
   async verifyCaptcha(tokenDto: TokenDto) {
@@ -152,6 +156,12 @@ export class AuthService {
     if (!posta && foundUser.role.roleName !== 'Administrador') {
       throw new HttpException('Posta not found', 404);
     }
+
+    await this.twilioService.client.messages.create({
+      body: `Nuevo inicio de sesión en tu cuenta, si no fuiste tú, por favor contacta con soporte.`,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: `+51${foundUser.personal.telefono}`,
+    });
 
     const payload = {
       userId: foundUser.userId,
