@@ -9,6 +9,7 @@ import { Roles } from 'src/role/entities/roles.entity';
 import { ConfigModule } from '@nestjs/config';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Recurso } from 'src/recurso/entities/recurso.entity';
       secret: process.env.JWT_SECRET,
     }),
     TypeOrmModule.forFeature([Auth, Roles, Personal, Recurso]),
+    RedisModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],

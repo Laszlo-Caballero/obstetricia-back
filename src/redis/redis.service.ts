@@ -16,8 +16,16 @@ export class RedisService implements OnModuleInit {
     await this.client.set(key, JSON.stringify(value));
   }
 
+  async setWithExpiry<T>(key: string, value: T, ttl: number) {
+    await this.client.set(key, JSON.stringify(value), 'EX', ttl);
+  }
+
   async get<T>(key: string): Promise<T | null> {
     const value = await this.client.get(key);
     return value ? JSON.parse(value) : null;
+  }
+
+  async del(key: string) {
+    await this.client.del(key);
   }
 }

@@ -30,7 +30,6 @@ import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina
 import { FilesModule } from './galeria/files.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DocumentacionModule } from './documentacion/documentacion.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,7 +53,6 @@ import { DocumentacionModule } from './documentacion/documentacion.module';
       rootPath: join(__dirname, '..', 'public'),
       serveRoot: '/static',
     }),
-
     MongooseModule.forRoot(
       `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`,
     ),

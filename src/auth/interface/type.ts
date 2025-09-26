@@ -11,3 +11,16 @@ export interface JwtPayload {
 export interface RequestUser extends Request {
   user: JwtPayload;
 }
+
+export interface OtpPayload {
+  code: string;
+  userId: number;
+  postaId: number;
+  email: string;
+  payload_jwt: {
+    userId: number;
+    user: string;
+    role: string;
+    postaId: number;
+  };
+}
