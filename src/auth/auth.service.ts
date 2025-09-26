@@ -184,6 +184,7 @@ export class AuthService {
       code,
       userId: foundUser.userId,
       postaId: postaId,
+      email: foundUser.personal.correo,
       payload_jwt: {
         userId: foundUser.userId,
         user: foundUser.user,
@@ -194,7 +195,7 @@ export class AuthService {
 
     const code_otp = uuid.v4();
 
-    await this.redisService.setWithExpiry(code_otp, payload_redis, 600);
+    await this.redisService.setWithExpiry(code_otp, payload_redis, 120);
 
     return {
       status: 200,
@@ -236,6 +237,35 @@ export class AuthService {
       data: {
         token,
       },
+    };
+  }
+
+  async resendOtp(code_otp: string) {
+    const data = await this.redisService.get<OtpPayload>(code_otp);
+
+    if (!data) {
+      throw new HttpException('OTP expired or invalid', 400);
+    }
+    const { email, code } = data;
+
+    const { error } = await this.resend.emails.send({
+      from: 'Obstetra <noreply@resend.dev>',
+      to: email,
+      subject: 'Nuevo inicio de sesión',
+      html: emailTemplate(code),
+    });
+
+    if (error) {
+      throw new HttpException(
+        `Error al enviar el correo: ${error.message}`,
+        500,
+      );
+    }
+
+    return {
+      status: 200,
+      message: 'OTP resent successfully',
+      data: null,
     };
   }
 

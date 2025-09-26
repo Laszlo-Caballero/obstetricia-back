@@ -16,6 +16,7 @@ export interface OtpPayload {
   code: string;
   userId: number;
   postaId: number;
+  email: string;
   payload_jwt: {
     userId: number;
     user: string;

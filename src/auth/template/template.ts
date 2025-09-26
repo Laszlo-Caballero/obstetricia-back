@@ -87,7 +87,7 @@ export const emailTemplate = (code: string) => {
               margin: 0 0 20px;
             "
           >
-            Usa este código de 6 dígitos para completar tu acceso. Expira en 10
+            Usa este código de 6 dígitos para completar tu acceso. Expira en 2
             minutos.
           </p>
         </td>

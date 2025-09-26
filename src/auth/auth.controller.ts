@@ -42,6 +42,11 @@ export class AuthController {
     return this.authService.verifyOtp(otpDto);
   }
 
+  @Post('resend-otp')
+  resendOtp(@Body('code_otp') code_otp: string) {
+    return this.authService.resendOtp(code_otp);
+  }
+
   @Post('admin')
   registerAdmin() {
     return this.authService.registerAdmin();
