@@ -21,6 +21,7 @@ import { join } from 'path';
 import { TokenDto } from './dto/token.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { PasswordDto } from './dto/password.dto';
+import { OtpDto } from './dto/otpDto';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,11 @@ export class AuthController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Post('verify-otp')
+  verifyOtp(@Body() otpDto: OtpDto) {
+    return this.authService.verifyOtp(otpDto);
   }
 
   @Post('admin')

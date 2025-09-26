@@ -1,4 +1,4 @@
-export const emailTemplate = () => {
+export const emailTemplate = (code: string) => {
   return `
     <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +10,7 @@ export const emailTemplate = () => {
     style="
       margin: 0;
       padding: 0;
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: Arial, Helvetica, sans-serif;
     "
   >
     <table
@@ -97,7 +97,11 @@ export const emailTemplate = () => {
         <td align="center">
           <table role="presentation" cellspacing="8" cellpadding="0" border="0">
             <tr>
-              <td
+              ${code
+                .split('')
+                .map((digit) => {
+                  return `
+                <td
                 style="
                   width: 90px;
                   height: 52px;
@@ -109,78 +113,10 @@ export const emailTemplate = () => {
                   color: white;
                 "
               >
-                1
-              </td>
-              <td
-                style="
-                  width: 90px;
-                  height: 52px;
-                  border: 1px solid #20303c;
-                  border-radius: 12px;
-                  text-align: center;
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: white;
-                "
-              >
-                1
-              </td>
-              <td
-                style="
-                  width: 90px;
-                  height: 52px;
-                  border: 1px solid #20303c;
-                  border-radius: 12px;
-                  text-align: center;
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: white;
-                "
-              >
-                1
-              </td>
-              <td
-                style="
-                  width: 90px;
-                  height: 52px;
-                  border: 1px solid #20303c;
-                  border-radius: 12px;
-                  text-align: center;
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: white;
-                "
-              >
-                1
-              </td>
-              <td
-                style="
-                  width: 90px;
-                  height: 52px;
-                  border: 1px solid #20303c;
-                  border-radius: 12px;
-                  text-align: center;
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: white;
-                "
-              >
-                1
-              </td>
-              <td
-                style="
-                  width: 90px;
-                  height: 52px;
-                  border: 1px solid #20303c;
-                  border-radius: 12px;
-                  text-align: center;
-                  font-size: 20px;
-                  font-weight: bold;
-                  color: white;
-                "
-              >
-                1
-              </td>
+                ${digit}
+              </td>`;
+                })
+                .join('')}
             </tr>
           </table>
         </td>

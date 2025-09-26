@@ -10,7 +10,7 @@ import { Roles } from 'src/role/entities/roles.entity';
 import { SetRoleDto } from './dto/setRole.dto';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
-import { RequestUser } from './interface/type';
+import { OtpPayload, RequestUser } from './interface/type';
 import { TokenDto } from './dto/token.dto';
 import axios from 'axios';
 import { ProfileDto } from './dto/profile.dto';
@@ -18,6 +18,9 @@ import { PasswordDto } from './dto/password.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { Resend } from 'resend';
 import { emailTemplate } from './template/template';
+import crypto from 'crypto';
+import uuid from 'uuid';
+import { OtpDto } from './dto/otpDto';
 
 @Injectable()
 export class AuthService {
@@ -161,11 +164,13 @@ export class AuthService {
       throw new HttpException('Posta not found', 404);
     }
 
+    const code = crypto.randomInt(100000, 1000000).toString();
+
     const { error } = await this.resend.emails.send({
       from: 'Obstetra <noreply@resend.dev>',
       to: foundUser.personal.correo,
       subject: 'Nuevo inicio de sesión',
-      html: emailTemplate(),
+      html: emailTemplate(code),
     });
 
     if (error) {
@@ -175,14 +180,21 @@ export class AuthService {
       );
     }
 
-    const payload = {
+    const payload_redis = {
+      code,
       userId: foundUser.userId,
-      user: foundUser.user,
-      role: foundUser.role.roleName,
-      postaId: posta ? posta.postaId : 0,
+      postaId: postaId,
+      payload_jwt: {
+        userId: foundUser.userId,
+        user: foundUser.user,
+        role: foundUser.role.roleName,
+        postaId: posta ? posta.postaId : 0,
+      },
     };
 
-    const token = this.jwtService.sign(payload);
+    const code_otp = uuid.v4();
+
+    await this.redisService.setWithExpiry(code_otp, payload_redis, 600);
 
     return {
       status: 200,
@@ -193,6 +205,35 @@ export class AuthService {
           ...foundUser.personal,
           posta: posta ? posta : null,
         },
+        code_otp,
+        // token,
+      },
+    };
+  }
+
+  async verifyOtp(otpDto: OtpDto) {
+    const { code, code_otp } = otpDto;
+
+    const data = await this.redisService.get<OtpPayload>(code_otp);
+
+    if (!data) {
+      throw new HttpException('OTP expired or invalid', 400);
+    }
+
+    const isValid = data.code === code;
+
+    if (!isValid) {
+      throw new HttpException('Invalid OTP code', 400);
+    }
+
+    const token = this.jwtService.sign(data.payload_jwt);
+
+    await this.redisService.del(code_otp);
+
+    return {
+      status: 200,
+      message: 'OTP verified successfully',
+      data: {
         token,
       },
     };
