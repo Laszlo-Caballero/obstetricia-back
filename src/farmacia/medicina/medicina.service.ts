@@ -154,15 +154,37 @@ export class MedicinaService {
   }
 
   async update(id: number, updateMedicinaDto: UpdateMedicinaDto) {
-    const findMedicina = await this.medicinaRepository.findOneBy({
-      medicinaId: id,
+    const { categoriaId, presentacionId, recursoId, ...rest } =
+      updateMedicinaDto;
+
+    const findCategoria = await this.categoriaRepository.findOneBy({
+      categoriaId,
+    });
+    const findPresentacion = await this.presentacionRepository.findOneBy({
+      presentacionId,
     });
 
-    if (!findMedicina) {
-      throw new HttpException('Medicine not found', 404);
+    const findRecurso = await this.recursoRepository.findOneBy({
+      recursoId,
+    });
+
+    if (!findCategoria) {
+      throw new HttpException('Category not found', 404);
+    }
+    if (!findPresentacion) {
+      throw new HttpException('Appearance not found', 404);
     }
 
-    await this.medicinaRepository.update(id, updateMedicinaDto);
+    if (!findRecurso) {
+      throw new HttpException('Resource not found', 404);
+    }
+
+    await this.medicinaRepository.update(id, {
+      ...rest,
+      categoria: findCategoria,
+      presentacion: findPresentacion,
+      recurso: findRecurso,
+    });
 
     const findAllMedicina = await this.medicinaRepository.find();
 
