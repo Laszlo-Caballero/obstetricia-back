@@ -137,8 +137,9 @@ export class MedicinaService {
   }
 
   async findOne(id: number) {
-    const findMedicina = await this.medicinaRepository.findOneBy({
-      medicinaId: id,
+    const findMedicina = await this.medicinaRepository.findOne({
+      relations: ['categoria', 'presentacion', 'recurso'],
+      where: { medicinaId: id },
     });
 
     if (!findMedicina) {
