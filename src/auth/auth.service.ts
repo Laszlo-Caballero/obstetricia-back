@@ -366,6 +366,7 @@ export class AuthService {
       telefono: '000000000',
       codigoColegio: '0000',
       estado: true,
+      correo: process.env.EMAIL_ADMIN,
     });
 
     await this.personalRepository.insert(newPersonal);

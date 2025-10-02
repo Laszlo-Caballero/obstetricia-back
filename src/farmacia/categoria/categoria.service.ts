@@ -22,13 +22,20 @@ export class CategoriaService {
 
     await this.categoriaRepository.insert(categoria);
 
-    const findAllCategoria = await this.categoriaRepository.find();
+    const [findAllCategoria, count] =
+      await this.categoriaRepository.findAndCount();
+
     await this.redisService.set('categorias', findAllCategoria);
 
     return {
       status: 200,
       message: 'Category created succesfully',
-      data: categoria,
+      data: findAllCategoria.slice(0, 10),
+      metadata: {
+        totalItems: count,
+        totalPages: Math.ceil(count / 10),
+        currentPage: 1,
+      },
     };
   }
 

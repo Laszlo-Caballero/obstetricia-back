@@ -24,13 +24,19 @@ export class PresentacionService {
 
     await this.presentacionRepository.insert(presentacion);
 
-    const findAllPresentacion = await this.presentacionRepository.find();
+    const [findAllPresentacion, count] =
+      await this.presentacionRepository.findAndCount();
     await this.redisService.set('presentaciones', findAllPresentacion);
 
     return {
       status: 200,
       message: 'Appearance created succesfully',
-      data: presentacion,
+      data: findAllPresentacion.slice(0, 10),
+      metadata: {
+        totalItems: count,
+        totalPages: Math.ceil(count / 10),
+        currentPage: 1,
+      },
     };
   }
 
