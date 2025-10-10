@@ -47,7 +47,7 @@ export class Cita {
   turno: Turno;
 
   @ManyToOne(() => Programa, (programa) => programa.citas)
-  programa: Programa;
+  programa: Relation<Programa>;
 
   @Column()
   fecha: Date;

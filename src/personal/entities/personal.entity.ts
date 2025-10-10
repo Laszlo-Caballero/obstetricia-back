@@ -1,3 +1,4 @@
+import { Programa } from '../../programa/entities/programa.entity';
 import { Auth } from '../../auth/entities/auth.entity';
 import { Cita } from '../../cita/entities/cita.entity';
 import { Posta } from '../../posta/entities/posta.entity';
@@ -74,4 +75,12 @@ export class Personal {
 
   @OneToMany(() => Cita, (cita) => cita.personal)
   citas: Cita[];
+
+  @OneToOne(() => Programa, (programa) => programa.responsable)
+  @JoinColumn({ name: 'programaId' })
+  programa: Relation<Programa>;
+
+  @ManyToOne(() => Programa, (programa) => programa.personal)
+  @JoinColumn({ name: 'asignadoId' })
+  asignado: Relation<Programa>;
 }

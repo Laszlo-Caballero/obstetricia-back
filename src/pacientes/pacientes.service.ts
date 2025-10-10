@@ -15,6 +15,14 @@ export class PacientesService {
   ) {}
 
   async create(createPacienteDto: CreatePacienteDto) {
+    const findDni = await this.pacienteRepository.findOneBy({
+      dni: createPacienteDto.dni,
+    });
+
+    if (findDni) {
+      throw new HttpException('El DNI ya está registrado', 400);
+    }
+
     const newPaciente = this.pacienteRepository.create(createPacienteDto);
 
     await this.pacienteRepository.insert(newPaciente);
