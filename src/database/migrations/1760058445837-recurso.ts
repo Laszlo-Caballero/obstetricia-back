@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Recurso1757087933895 implements MigrationInterface {
+export class Recurso1760058445837 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
         insert into recurso (nombre, extension, url) values
