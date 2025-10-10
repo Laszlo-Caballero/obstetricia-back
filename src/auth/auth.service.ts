@@ -167,7 +167,7 @@ export class AuthService {
     const code = crypto.randomInt(100000, 1000000).toString();
 
     const { error } = await this.resend.emails.send({
-      from: 'Obstetra <noreply@resend.dev>',
+      from: 'Obstetra <noreply@laszlocaballero.online>',
       to: foundUser.personal.correo,
       subject: 'Nuevo inicio de sesión',
       html: emailTemplate(code),
