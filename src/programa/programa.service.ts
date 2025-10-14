@@ -53,7 +53,14 @@ export class ProgramaService {
     }
 
     const [programas, totalItems] = await this.programaRepository.findAndCount({
-      relations: ['responsable', 'personal', 'citas', 'personal'],
+      relations: [
+        'responsable',
+        'personal',
+        'citas',
+        'personal',
+        'responsable.user',
+        'responsable.user.recurso',
+      ],
       where,
       take: limit,
       skip: (page - 1) * limit,
@@ -74,7 +81,14 @@ export class ProgramaService {
   async findOne(id: number) {
     const programa = await this.programaRepository.findOne({
       where: { programaId: id },
-      relations: ['responsable', 'personal', 'citas', 'personal'],
+      relations: [
+        'responsable',
+        'personal',
+        'citas',
+        'personal',
+        'responsable.user',
+        'responsable.user.recurso',
+      ],
     });
 
     if (!programa) {
