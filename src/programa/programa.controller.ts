@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { ProgramaService } from './programa.service';
 import { CreateProgramaDto } from './dto/create-programa.dto';
 import { UpdateProgramaDto } from './dto/update-programa.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RolesEnum } from 'src/auth/enum/roles';
+import { QueryDto } from './dto/query.dto';
 
 @Controller('programa')
 export class ProgramaController {
@@ -23,8 +25,8 @@ export class ProgramaController {
   }
 
   @Get()
-  findAll() {
-    return this.programaService.findAll();
+  findAll(@Query() query: QueryDto) {
+    return this.programaService.findAll(query);
   }
 
   @Get(':id')

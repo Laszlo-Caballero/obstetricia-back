@@ -2,83 +2,118 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateProgramaDto } from './dto/create-programa.dto';
 import { UpdateProgramaDto } from './dto/update-programa.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Programa } from './entities/programa.entity';
-import { RedisService } from 'src/redis/redis.service';
+import { Personal } from 'src/personal/entities/personal.entity';
+import { QueryDto } from './dto/query.dto';
+import { QueryConditions } from 'src/interface/type';
 
 @Injectable()
 export class ProgramaService {
-  private readonly programasKey = 'programas';
-
   constructor(
     @InjectRepository(Programa)
     private programaRepository: Repository<Programa>,
-    private redisService: RedisService,
+    @InjectRepository(Personal)
+    private personalRepository: Repository<Personal>,
   ) {}
 
   async create(createProgramaDto: CreateProgramaDto) {
-    const newPrograma = this.programaRepository.create(createProgramaDto);
+    const { responsableId, ...rest } = createProgramaDto;
+    const findResponsable = await this.personalRepository.findOne({
+      where: { personalId: responsableId },
+    });
+
+    if (!findResponsable) {
+      throw new HttpException('El responsable no existe', 400);
+    }
+
+    const newPrograma = this.programaRepository.create({
+      ...rest,
+      responsable: findResponsable,
+    });
+
     await this.programaRepository.insert(newPrograma);
 
-    const allProgramas = await this.programaRepository.find();
-    await this.redisService.set(this.programasKey, allProgramas);
+    return { status: 201, message: 'Programa creado', data: newPrograma };
+  }
+
+  async findAll(query: QueryDto) {
+    const { limit, page, search, estado } = query;
+
+    const where: QueryConditions<Programa> = {};
+
+    if (estado) {
+      where.estado = estado;
+    }
+
+    if (search) {
+      where.responsable = {
+        nombre: Like(`%${search}%`),
+      };
+    }
+
+    const [programas, totalItems] = await this.programaRepository.findAndCount({
+      relations: ['responsable', 'personal', 'citas', 'personal'],
+      where,
+      take: limit,
+      skip: (page - 1) * limit,
+    });
 
     return {
       status: 200,
-      message: 'Programa creado exitosamente',
-      data: allProgramas,
+      message: 'OK',
+      data: programas,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+      },
     };
   }
 
-  async findAll() {
-    const programas = await this.redisService.get<Programa[]>(
-      this.programasKey,
-    );
-
-    if (programas) {
-      return { status: 200, message: 'OK', data: programas };
-    }
-
-    const allProgramas = await this.programaRepository.find();
-
-    await this.redisService.set(this.programasKey, allProgramas);
-
-    return { status: 200, message: 'OK', data: allProgramas };
-  }
-
   async findOne(id: number) {
-    const findPrograma = await this.programaRepository.findOneBy({
-      programaId: id,
+    const programa = await this.programaRepository.findOne({
+      where: { programaId: id },
+      relations: ['responsable', 'personal', 'citas', 'personal'],
     });
 
-    if (!findPrograma) {
+    if (!programa) {
       throw new HttpException('Programa no encontrado', 404);
     }
 
-    return { status: 200, message: 'OK', data: findPrograma };
+    return { status: 200, message: 'OK', data: programa };
   }
 
   async update(id: number, updateProgramaDto: UpdateProgramaDto) {
-    const findPrograma = await this.programaRepository.findOneBy({
-      programaId: id,
+    const { responsableId, ...rest } = updateProgramaDto;
+
+    const findPrograma = await this.programaRepository.findOne({
+      where: { programaId: id },
     });
 
     if (!findPrograma) {
       throw new HttpException('Programa no encontrado', 404);
     }
 
-    await this.programaRepository.update(id, updateProgramaDto);
+    const findResponsable = await this.personalRepository.findOne({
+      where: { personalId: responsableId },
+    });
 
-    const allProgramas = await this.programaRepository.find();
+    if (!findResponsable) {
+      throw new HttpException('El responsable no existe', 400);
+    }
 
-    await this.redisService.set(this.programasKey, allProgramas);
+    await this.programaRepository.update(id, {
+      ...rest,
+      responsable: findResponsable,
+    });
 
-    return { status: 200, message: 'OK', data: allProgramas };
+    return { status: 200, message: 'OK', data: null };
   }
 
   async remove(id: number) {
-    const findPrograma = await this.programaRepository.findOneBy({
-      programaId: id,
+    const findPrograma = await this.programaRepository.findOne({
+      where: { programaId: id },
     });
 
     if (!findPrograma) {
@@ -87,10 +122,6 @@ export class ProgramaService {
 
     await this.programaRepository.update(id, { estado: false });
 
-    const allProgramas = await this.programaRepository.find();
-
-    await this.redisService.set(this.programasKey, allProgramas);
-
-    return { status: 200, message: 'OK', data: allProgramas };
+    return { status: 200, message: 'OK', data: null };
   }
 }
