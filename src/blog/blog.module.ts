@@ -6,6 +6,10 @@ import { Blog, BlogSchema } from './entities/blog.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Auth } from 'src/auth/entities/auth.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import {
+  BlogCategory,
+  BlogCategorySchema,
+} from './blog-category/entities/blog-category.entity';
 
 @Module({
   imports: [
@@ -13,6 +17,10 @@ import { Recurso } from 'src/recurso/entities/recurso.entity';
       {
         name: Blog.name,
         schema: BlogSchema,
+      },
+      {
+        name: BlogCategory.name,
+        schema: BlogCategorySchema,
       },
     ]),
     TypeOrmModule.forFeature([Auth, Recurso]),

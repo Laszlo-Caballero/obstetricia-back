@@ -22,7 +22,6 @@ export class BlogCategoryController {
     return this.blogCategoryService.create(createBlogCategoryDto);
   }
 
-  @Auth()
   @Get()
   findAll() {
     return this.blogCategoryService.findAll();

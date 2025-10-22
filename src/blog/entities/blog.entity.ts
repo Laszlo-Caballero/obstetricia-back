@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { RecursoType } from 'src/recurso/interface/type';
-import { ComponentProps } from '../interfaces/components';
+import { ComponentProps, StatusType } from '../interfaces/components';
 import { User } from 'src/auth/interface/type';
+import { CategoryType } from '../interfaces/category';
 
 @Schema({
   collection: 'blogs',
@@ -30,6 +31,11 @@ export class Blog {
   @Prop({
     type: [Object],
   })
+  category: CategoryType[];
+
+  @Prop({
+    type: [Object],
+  })
   components: ComponentProps[];
 
   @Prop({
@@ -41,6 +47,13 @@ export class Blog {
     default: Date.now,
   })
   createdAt: Date;
+
+  @Prop({
+    type: String,
+    enum: StatusType,
+    default: StatusType.DRAFT,
+  })
+  status: StatusType;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

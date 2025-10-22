@@ -31,4 +31,9 @@ export class CreateBlogDto {
   @ValidateNested({ each: true })
   @Type(() => ComponentDto)
   components: ComponentDto[];
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsNumber({}, { each: true })
+  categoryIds: number[];
 }

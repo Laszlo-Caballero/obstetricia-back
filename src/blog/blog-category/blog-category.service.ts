@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BlogCategory } from './entities/blog-category.entity';
 import { Model } from 'mongoose';
 import { RedisService } from 'src/redis/redis.service';
+import { parseSlug } from '../utils/parseSlug';
 
 @Injectable()
 export class BlogCategoryService {
@@ -17,9 +18,12 @@ export class BlogCategoryService {
   ) {}
 
   async create(createBlogCategoryDto: CreateBlogCategoryDto) {
-    const createdCategory = await this.blogCategoryModel.create(
-      createBlogCategoryDto,
-    );
+    const slug = parseSlug(createBlogCategoryDto.name);
+
+    const createdCategory = await this.blogCategoryModel.create({
+      ...createBlogCategoryDto,
+      slug,
+    });
 
     await createdCategory.save();
 
@@ -83,11 +87,14 @@ export class BlogCategoryService {
       throw new HttpException('Blog category not found', HttpStatus.NOT_FOUND);
     }
 
+    const slug = parseSlug(updateBlogCategoryDto.name || findCategory.name);
+
     const update = await this.blogCategoryModel.updateOne(
       { blogCategoryId: id },
       {
         $set: {
           ...updateBlogCategoryDto,
+          slug,
           blogCategoryId: id,
         },
       },

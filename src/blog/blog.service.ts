@@ -9,6 +9,9 @@ import { Blog } from './entities/blog.entity';
 import { Model } from 'mongoose';
 import { parseSlug } from './utils/parseSlug';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import { BlogCategory } from './blog-category/entities/blog-category.entity';
+import { BlogQueryDto } from './dto/query.dto';
+import { QueryPublicDto } from './dto/querypublic.dto';
 
 @Injectable()
 export class BlogService {
@@ -19,6 +22,8 @@ export class BlogService {
     private recursoRepository: Repository<Recurso>,
     @InjectModel(Blog.name)
     private blogModel: Model<Blog>,
+    @InjectModel(BlogCategory.name)
+    private blogCategoryModel: Model<BlogCategory>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto, userId: number) {
@@ -39,6 +44,17 @@ export class BlogService {
       throw new HttpException('Recurso not found', HttpStatus.NOT_FOUND);
     }
 
+    const categories = await this.blogCategoryModel.find({
+      blogCategoryId: { $in: createBlogDto.categoryIds },
+    });
+
+    if (categories.length !== createBlogDto.categoryIds.length) {
+      throw new HttpException(
+        'One or more categories not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const slug = parseSlug(createBlogDto.title);
 
     const newBlog = await this.blogModel.create({
@@ -46,6 +62,7 @@ export class BlogService {
       user,
       slug,
       image: recurso,
+      category: categories,
     });
 
     await newBlog.save();
@@ -57,8 +74,62 @@ export class BlogService {
     };
   }
 
-  async findAll() {
-    return `This action returns all blog`;
+  async findAll(query: BlogQueryDto) {
+    const filter = {
+      ...(query?.categorySlug && {
+        category: { $elemMatch: { slug: query.categorySlug } },
+      }),
+      ...(query?.search && { title: { $regex: query.search, $options: 'i' } }),
+      ...(query?.status && { status: query.status }),
+    };
+
+    const countBlog = await this.blogModel.countDocuments(filter);
+
+    const blogs = await this.blogModel
+      .find(filter)
+      .skip((query?.page - 1) * query?.limit)
+      .limit(query?.limit)
+      .exec();
+
+    return {
+      message: 'Blogs found successfully',
+      data: {
+        blogs,
+        total: countBlog,
+        totalPages: Math.ceil(countBlog / query?.limit),
+        page: query?.page,
+      },
+      status: HttpStatus.OK,
+    };
+  }
+
+  async findAllPublished(query: QueryPublicDto) {
+    const filter = {
+      status: 'PUBLISHED',
+      ...(query?.categorySlug && {
+        category: { $elemMatch: { slug: query.categorySlug } },
+      }),
+      ...(query?.search && { title: { $regex: query.search, $options: 'i' } }),
+    };
+
+    const countBlog = await this.blogModel.countDocuments(filter);
+
+    const blogs = await this.blogModel
+      .find(filter)
+      .skip((query?.page - 1) * query?.limit)
+      .limit(query?.limit)
+      .exec();
+
+    return {
+      message: 'Blogs found successfully',
+      data: {
+        blogs,
+        total: countBlog,
+        totalPages: Math.ceil(countBlog / query?.limit),
+        page: query?.page,
+      },
+      status: HttpStatus.OK,
+    };
   }
 
   async findOne(id: number) {
@@ -94,10 +165,13 @@ export class BlogService {
     };
   }
 
+  //TODO: Implement update and remove methods
   update(id: number, updateBlogDto: UpdateBlogDto) {
+    console.log(updateBlogDto);
+
     return `This action updates a #${id} blog`;
   }
-
+  //TODO: Implement update and remove methods
   remove(id: number) {
     return `This action removes a #${id} blog`;
   }

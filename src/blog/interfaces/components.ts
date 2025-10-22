@@ -9,6 +9,11 @@ export enum ComponentType {
   BADGES = 'BADGES',
 }
 
+export enum StatusType {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
+}
+
 export interface TextInterface {
   text: string;
   highlight?: {

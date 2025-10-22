@@ -9,6 +9,12 @@ export class BlogCategory {
 
   @Prop()
   name: string;
+
+  @Prop()
+  slug: string;
+
+  @Prop()
+  iconName: string;
 }
 
 export const BlogCategorySchema = SchemaFactory.createForClass(BlogCategory);
