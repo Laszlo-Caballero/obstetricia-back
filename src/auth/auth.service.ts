@@ -249,7 +249,7 @@ export class AuthService {
     const { email, code } = data;
 
     const { error } = await this.resend.emails.send({
-      from: 'Obstetra <noreply@resend.dev>',
+      from: 'Obstetra <noreply@laszlocaballero.online>',
       to: email,
       subject: 'Nuevo inicio de sesión',
       html: emailTemplate(code),
