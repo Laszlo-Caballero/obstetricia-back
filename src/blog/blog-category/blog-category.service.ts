@@ -33,7 +33,7 @@ export class BlogCategoryService {
 
     return {
       message: 'Blog category created successfully',
-      data: createdCategory,
+      data: allCategories,
       status: 201,
     };
   }
@@ -89,7 +89,7 @@ export class BlogCategoryService {
 
     const slug = parseSlug(updateBlogCategoryDto.name || findCategory.name);
 
-    const update = await this.blogCategoryModel.updateOne(
+    await this.blogCategoryModel.updateOne(
       { blogCategoryId: id },
       {
         $set: {
@@ -106,7 +106,7 @@ export class BlogCategoryService {
 
     return {
       message: 'Blog category updated successfully',
-      data: update,
+      data: allCategories,
       status: 200,
     };
   }
@@ -128,7 +128,7 @@ export class BlogCategoryService {
 
     return {
       message: 'Blog category removed successfully',
-      data: findCategory,
+      data: allCategories,
       status: 200,
     };
   }
