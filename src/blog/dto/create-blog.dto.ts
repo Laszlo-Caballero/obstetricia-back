@@ -16,10 +16,6 @@ export class CreateBlogDto {
 
   @IsString()
   @IsNotEmpty()
-  slug: string;
-
-  @IsString()
-  @IsNotEmpty()
   description: string;
 
   @IsString()

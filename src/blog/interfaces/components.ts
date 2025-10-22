@@ -6,6 +6,7 @@ export enum ComponentType {
   NOTE = 'NOTE',
   LIST = 'LIST',
   ARTICLES = 'ARTICLES',
+  BADGES = 'BADGES',
 }
 
 export interface TextInterface {

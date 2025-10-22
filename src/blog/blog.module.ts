@@ -4,6 +4,8 @@ import { BlogController } from './blog.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from './entities/blog.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Auth } from 'src/auth/entities/auth.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Module({
   imports: [
@@ -13,7 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         schema: BlogSchema,
       },
     ]),
-    TypeOrmModule.forFeature([Blog]),
+    TypeOrmModule.forFeature([Auth, Recurso]),
   ],
   controllers: [BlogController],
   providers: [BlogService],
