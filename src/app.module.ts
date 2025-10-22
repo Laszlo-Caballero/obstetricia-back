@@ -30,6 +30,7 @@ import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina
 import { FilesModule } from './galeria/files.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DocumentacionModule } from './documentacion/documentacion.module';
+import { BlogModule } from './blog/blog.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -81,6 +82,7 @@ import { DocumentacionModule } from './documentacion/documentacion.module';
     RecetaMedicinaModule,
     FilesModule,
     DocumentacionModule,
+    BlogModule,
   ],
   controllers: [],
   providers: [RedisService],
