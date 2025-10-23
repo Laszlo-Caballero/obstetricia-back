@@ -175,9 +175,17 @@ export class BlogService {
 
     await blog.updateOne({ status: StatusType.PUBLISHED });
 
+    const countBlog = await this.blogModel.countDocuments();
+    const blogList = await this.blogModel.find().limit(10).exec();
+
     return {
       message: 'Blog published successfully',
-      data: null,
+      data: blogList,
+      metadata: {
+        totalItems: countBlog,
+        totalPages: Math.ceil(countBlog / 10),
+        currentPage: 1,
+      },
       status: HttpStatus.OK,
     };
   }
