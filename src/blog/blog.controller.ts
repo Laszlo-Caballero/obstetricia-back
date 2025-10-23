@@ -16,6 +16,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RequestUser } from 'src/auth/interface/type';
 import { BlogQueryDto } from './dto/query.dto';
 import { QueryPublicDto } from './dto/querypublic.dto';
+import { RolesEnum } from 'src/auth/enum/roles';
 
 @Controller('blog')
 export class BlogController {
@@ -48,9 +49,15 @@ export class BlogController {
   }
 
   @Auth()
-  @Patch(':id')
+  @Patch('update/:id')
   update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
     return this.blogService.update(+id, updateBlogDto);
+  }
+
+  @Auth(RolesEnum.Administrador)
+  @Patch('publish/:id')
+  publish(@Param('id') id: string) {
+    return this.blogService.publishBlog(+id);
   }
 
   @Auth()

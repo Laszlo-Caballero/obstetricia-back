@@ -12,6 +12,7 @@ import { Recurso } from 'src/recurso/entities/recurso.entity';
 import { BlogCategory } from './blog-category/entities/blog-category.entity';
 import { BlogQueryDto } from './dto/query.dto';
 import { QueryPublicDto } from './dto/querypublic.dto';
+import { StatusType } from './interfaces/components';
 
 @Injectable()
 export class BlogService {
@@ -93,11 +94,11 @@ export class BlogService {
 
     return {
       message: 'Blogs found successfully',
-      data: {
-        blogs,
-        total: countBlog,
+      data: blogs,
+      metadata: {
+        totalItems: countBlog,
         totalPages: Math.ceil(countBlog / query?.limit),
-        page: query?.page,
+        currentPage: query?.page,
       },
       status: HttpStatus.OK,
     };
@@ -161,6 +162,22 @@ export class BlogService {
     return {
       message: 'Blog found successfully',
       data: blog,
+      status: HttpStatus.OK,
+    };
+  }
+
+  async publishBlog(id: number) {
+    const blog = await this.blogModel.findOne({ blogId: id });
+
+    if (!blog) {
+      throw new HttpException('Blog not found', HttpStatus.NOT_FOUND);
+    }
+
+    await blog.updateOne({ status: StatusType.PUBLISHED });
+
+    return {
+      message: 'Blog published successfully',
+      data: null,
       status: HttpStatus.OK,
     };
   }
