@@ -95,42 +95,75 @@ export class PacientesService {
     };
   }
 
-  async update(id: number, updatePacienteDto: UpdatePacienteDto) {
+  async update(dni: string, updatePacienteDto: UpdatePacienteDto) {
     const paciente = await this.pacienteRepository.findOneBy({
-      pacienteId: id,
+      dni,
     });
 
     if (!paciente) {
       throw new HttpException('Paciente no encontrado', 404);
     }
 
-    await this.pacienteRepository.update(id, updatePacienteDto);
+    await this.pacienteRepository.update(
+      {
+        dni,
+      },
+      updatePacienteDto,
+    );
+
+    const pacientes = await this.pacienteRepository.find({
+      relations: ['citas'],
+      skip: 0,
+      take: 10,
+    });
 
     return {
       status: 200,
       message: 'Paciente actualizado exitosamente',
-      data: null,
+      data: pacientes,
+      metadata: {
+        totalItems: pacientes.length,
+        totalPages: Math.ceil(pacientes.length / 10),
+        currentPage: 1,
+      },
     };
   }
 
-  async remove(id: number) {
+  async remove(dni: string) {
     const paciente = await this.pacienteRepository.findOneBy({
-      pacienteId: id,
+      dni,
     });
 
     if (!paciente) {
       throw new HttpException('Paciente no encontrado', 404);
     }
 
-    await this.pacienteRepository.update(id, { estado: false });
+    await this.pacienteRepository.update(
+      {
+        dni,
+      },
+      { estado: false },
+    );
+
+    const pacientes = await this.pacienteRepository.find({
+      relations: ['citas'],
+      skip: 0,
+      take: 10,
+    });
 
     return {
       status: 200,
       message: 'Paciente eliminado exitosamente',
-      data: null,
+      data: pacientes,
+      metadata: {
+        totalItems: pacientes.length,
+        totalPages: Math.ceil(pacientes.length / 10),
+        currentPage: 1,
+      },
     };
   }
 
+  //TODO: TEST THIS METHOD
   async importExcel(file: Express.Multer.File) {
     if (!file) {
       throw new HttpException('No se ha subido ningún archivo', 400);
@@ -152,8 +185,9 @@ export class PacientesService {
       const apellido_paterno = row.getCell(2)?.text?.trim();
       const apellido_materno = row.getCell(3)?.text?.trim();
       const nombres = row.getCell(4)?.text?.trim();
-      const fecha_nacimiento = row.getCell(5)?.text?.trim();
-      const direccion = row.getCell(6)?.text?.trim();
+      const sexo = row.getCell(5)?.text?.trim();
+      const fecha_nacimiento = row.getCell(6)?.text?.trim();
+      const direccion = row.getCell(7)?.text?.trim();
       const departamento = row.getCell(8)?.text?.trim();
       const provincia = row.getCell(9)?.text?.trim();
       const distrito = row.getCell(10)?.text?.trim();
@@ -178,6 +212,7 @@ export class PacientesService {
         provincia,
         telefono,
         nota: '',
+        sexo,
       };
       pacientes.push(newPaciente);
     });

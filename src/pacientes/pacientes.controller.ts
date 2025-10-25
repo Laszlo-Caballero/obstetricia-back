@@ -40,17 +40,17 @@ export class PacientesController {
     return this.pacientesService.findOne(dni);
   }
 
-  @Patch(':id')
+  @Patch(':dni')
   update(
-    @Param('id') id: string,
+    @Param('dni') dni: string,
     @Body() updatePacienteDto: UpdatePacienteDto,
   ) {
-    return this.pacientesService.update(+id, updatePacienteDto);
+    return this.pacientesService.update(dni, updatePacienteDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pacientesService.remove(+id);
+  @Delete(':dni')
+  remove(@Param('dni') dni: string) {
+    return this.pacientesService.remove(dni);
   }
 
   @Post('/import-excel')

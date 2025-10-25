@@ -56,6 +56,10 @@ export class CreatePacienteDto {
   telefono: string;
 
   @IsString()
+  @IsNotEmpty()
+  sexo: string;
+
+  @IsString()
   @IsOptional()
   nota: string;
 

@@ -27,6 +27,9 @@ export class Paciente {
   @Column({ default: '' })
   nota: string;
 
+  @Column({ default: '' })
+  sexo: string;
+
   @Column()
   direccion: string;
 
