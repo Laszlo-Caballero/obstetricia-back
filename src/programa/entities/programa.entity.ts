@@ -4,8 +4,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
@@ -33,7 +33,7 @@ export class Programa {
   @OneToMany(() => Cita, (cita) => cita.programa)
   citas: Cita[];
 
-  @OneToOne(() => Personal, (personal) => personal.programa)
+  @ManyToOne(() => Personal, (personal) => personal.programa)
   @JoinColumn({ name: 'responsableId' })
   responsable: Relation<Personal>;
 

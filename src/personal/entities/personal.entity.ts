@@ -76,9 +76,9 @@ export class Personal {
   @OneToMany(() => Cita, (cita) => cita.personal)
   citas: Cita[];
 
-  @OneToOne(() => Programa, (programa) => programa.responsable)
+  @OneToMany(() => Programa, (programa) => programa.responsable)
   @JoinColumn({ name: 'programaId' })
-  programa: Relation<Programa>;
+  programa: Relation<Programa[]>;
 
   @ManyToOne(() => Programa, (programa) => programa.personal)
   @JoinColumn({ name: 'asignadoId' })
