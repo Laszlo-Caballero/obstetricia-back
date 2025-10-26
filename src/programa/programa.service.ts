@@ -42,7 +42,7 @@ export class ProgramaService {
 
     const where: QueryConditions<Programa> = {};
 
-    if (estado) {
+    if (estado != undefined) {
       where.estado = estado;
     }
 
