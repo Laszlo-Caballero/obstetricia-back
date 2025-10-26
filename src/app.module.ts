@@ -32,6 +32,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DocumentacionModule } from './documentacion/documentacion.module';
 import { BlogModule } from './blog/blog.module';
 import { BlogCategoryModule } from './blog/blog-category/blog-category.module';
+import { MotivosModule } from './motivos/motivos.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -85,6 +86,7 @@ import { BlogCategoryModule } from './blog/blog-category/blog-category.module';
     DocumentacionModule,
     BlogModule,
     BlogCategoryModule,
+    MotivosModule,
   ],
   controllers: [],
   providers: [RedisService],

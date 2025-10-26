@@ -10,6 +10,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Motivo } from '../../../motivos/entities/motivo.entity';
 
 @Entity()
 export class Medicina {
@@ -58,4 +59,7 @@ export class Medicina {
 
   @ManyToOne(() => Recurso, (recurso) => recurso.medicinas)
   recurso: Recurso;
+
+  @ManyToOne(() => Motivo, (motivo) => motivo.medicina)
+  motivo: Motivo;
 }
