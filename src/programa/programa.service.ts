@@ -42,8 +42,8 @@ export class ProgramaService {
 
     const where: QueryConditions<Programa> = {};
 
-    if (estado != undefined) {
-      where.estado = estado;
+    if (estado) {
+      where.estado = estado === 'true';
     }
 
     if (search) {

@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class QueryDto {
   @IsNumber()
@@ -20,8 +20,7 @@ export class QueryDto {
   @IsOptional()
   searchByName?: string;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  @Type(() => Boolean)
-  estado?: boolean;
+  estado?: string;
 }
