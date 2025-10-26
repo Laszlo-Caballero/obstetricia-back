@@ -38,7 +38,7 @@ export class ProgramaService {
   }
 
   async findAll(query: QueryDto) {
-    const { limit, page, search, estado } = query;
+    const { limit, page, search, estado, searchByName } = query;
 
     const where: QueryConditions<Programa> = {};
 
@@ -50,6 +50,10 @@ export class ProgramaService {
       where.responsable = {
         nombre: Like(`%${search}%`),
       };
+    }
+
+    if (searchByName) {
+      where.nombre = Like(`%${searchByName}%`);
     }
 
     const [programas, totalItems] = await this.programaRepository.findAndCount({

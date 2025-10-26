@@ -16,6 +16,10 @@ export class QueryDto {
   @IsOptional()
   search?: string;
 
+  @IsString()
+  @IsOptional()
+  searchByName?: string;
+
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
