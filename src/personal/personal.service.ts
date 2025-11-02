@@ -114,7 +114,7 @@ export class PersonalService {
   }
 
   async update(id: number, updatePersonalDto: UpdatePersonalDto) {
-    const findOne = await this.personalRepository.findOneBy({ personalId: id });
+    let findOne = await this.personalRepository.findOneBy({ personalId: id });
     if (!findOne) {
       throw new HttpException('Personal no encontrado', 404);
     }
@@ -150,12 +150,21 @@ export class PersonalService {
       throw new HttpException('Posta no encontrada', 404);
     }
 
-    await this.personalRepository.update(id, {
+    findOne = {
+      ...findOne,
       ...personal,
       turno,
       tipoPersonal,
       posta,
-    });
+    };
+
+    // await this.personalRepository.update(id, {
+    //   ...personal,
+    //   turno,
+    //   tipoPersonal,
+    // });
+
+    await this.personalRepository.save(findOne);
 
     return {
       message: 'Personal actualizado exitosamente',
