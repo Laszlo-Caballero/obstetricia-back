@@ -5,9 +5,10 @@ import { RedisModule } from 'src/redis/redis.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Programa } from './entities/programa.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
+import { Posta } from 'src/posta/entities/posta.entity';
 
 @Module({
-  imports: [RedisModule, TypeOrmModule.forFeature([Programa, Personal])],
+  imports: [RedisModule, TypeOrmModule.forFeature([Programa, Personal, Posta])],
   controllers: [ProgramaController],
   providers: [ProgramaService],
 })

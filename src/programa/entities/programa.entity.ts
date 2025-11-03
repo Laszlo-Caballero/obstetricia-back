@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { Posta } from '../../posta/entities/posta.entity';
 
 @Entity()
 export class Programa {
@@ -39,4 +40,8 @@ export class Programa {
 
   @OneToMany(() => Personal, (personal) => personal.asignado)
   personal: Personal[];
+
+  @ManyToOne(() => Posta, (posta) => posta.programas)
+  @JoinColumn({ name: 'postaId' })
+  posta: Relation<Posta>;
 }

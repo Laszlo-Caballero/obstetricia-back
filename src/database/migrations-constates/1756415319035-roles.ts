@@ -6,7 +6,8 @@ export class Roles1756415319035 implements MigrationInterface {
             INSERT INTO Roles (roleName) VALUES
             ('Obstetra'),
             ('Enfermera'),
-            ('Administrador');
+            ('Administrador'),
+            ('Supervisor');
     `);
   }
 
@@ -15,7 +16,8 @@ export class Roles1756415319035 implements MigrationInterface {
             DELETE FROM Roles WHERE roleName IN
             ('Obstetra',
             'Enfermera',
-            'Administrador');
+            'Administrador',
+            'Supervisor');
     `);
   }
 }

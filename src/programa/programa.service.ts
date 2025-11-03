@@ -7,6 +7,9 @@ import { Programa } from './entities/programa.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { QueryDto } from './dto/query.dto';
 import { QueryConditions } from 'src/interface/type';
+import { JwtPayload } from 'src/auth/interface/type';
+import { RolesEnum } from 'src/auth/enum/roles';
+import { Posta } from 'src/posta/entities/posta.entity';
 
 @Injectable()
 export class ProgramaService {
@@ -15,9 +18,11 @@ export class ProgramaService {
     private programaRepository: Repository<Programa>,
     @InjectRepository(Personal)
     private personalRepository: Repository<Personal>,
+    @InjectRepository(Posta)
+    private postaRepository: Repository<Posta>,
   ) {}
 
-  async create(createProgramaDto: CreateProgramaDto) {
+  async create(createProgramaDto: CreateProgramaDto, user: JwtPayload) {
     const { responsableId, ...rest } = createProgramaDto;
     const findResponsable = await this.personalRepository.findOne({
       where: { personalId: responsableId },
@@ -27,9 +32,18 @@ export class ProgramaService {
       throw new HttpException('El responsable no existe', 400);
     }
 
+    const findPosta = await this.postaRepository.findOne({
+      where: { postaId: user.postaId },
+    });
+
+    if (!findPosta) {
+      throw new HttpException('La posta no existe', 400);
+    }
+
     const newPrograma = this.programaRepository.create({
       ...rest,
       responsable: findResponsable,
+      posta: findPosta,
     });
 
     await this.programaRepository.insert(newPrograma);
@@ -37,7 +51,7 @@ export class ProgramaService {
     return { status: 201, message: 'Programa creado', data: newPrograma };
   }
 
-  async findAll(query: QueryDto) {
+  async findAll(query: QueryDto, jwt: JwtPayload) {
     const { limit, page, search, estado, searchByName } = query;
 
     const where: QueryConditions<Programa> = {};
@@ -49,6 +63,12 @@ export class ProgramaService {
     if (search) {
       where.responsable = {
         nombre: Like(`%${search}%`),
+      };
+    }
+
+    if (jwt.role != RolesEnum.Administrador) {
+      where.posta = {
+        postaId: jwt.postaId,
       };
     }
 
@@ -64,6 +84,7 @@ export class ProgramaService {
         'personal',
         'responsable.user',
         'responsable.user.recurso',
+        'posta',
       ],
       where,
       take: limit,
@@ -82,7 +103,7 @@ export class ProgramaService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, jwt: JwtPayload) {
     const programa = await this.programaRepository.findOne({
       where: { programaId: id },
       relations: [
@@ -92,6 +113,7 @@ export class ProgramaService {
         'personal',
         'responsable.user',
         'responsable.user.recurso',
+        'posta',
       ],
     });
 
@@ -99,17 +121,36 @@ export class ProgramaService {
       throw new HttpException('Programa no encontrado', 404);
     }
 
+    if (
+      jwt.role != RolesEnum.Administrador &&
+      programa.posta.postaId != jwt.postaId
+    ) {
+      throw new HttpException('Programa no encontrado', 404);
+    }
+
     return { status: 200, message: 'OK', data: programa };
   }
 
-  async update(id: number, updateProgramaDto: UpdateProgramaDto) {
+  async update(
+    id: number,
+    updateProgramaDto: UpdateProgramaDto,
+    jwt: JwtPayload,
+  ) {
     const { responsableId, ...rest } = updateProgramaDto;
 
     const findPrograma = await this.programaRepository.findOne({
       where: { programaId: id },
+      relations: ['posta'],
     });
 
     if (!findPrograma) {
+      throw new HttpException('Programa no encontrado', 404);
+    }
+
+    if (
+      jwt.role != RolesEnum.Administrador &&
+      findPrograma.posta.postaId != jwt.postaId
+    ) {
       throw new HttpException('Programa no encontrado', 404);
     }
 
@@ -129,12 +170,19 @@ export class ProgramaService {
     return { status: 200, message: 'OK', data: null };
   }
 
-  async remove(id: number) {
+  async remove(id: number, jwt: JwtPayload) {
     const findPrograma = await this.programaRepository.findOne({
       where: { programaId: id },
+      relations: ['posta'],
     });
 
     if (!findPrograma) {
+      throw new HttpException('Programa no encontrado', 404);
+    }
+    if (
+      jwt.role != RolesEnum.Administrador &&
+      findPrograma.posta.postaId != jwt.postaId
+    ) {
       throw new HttpException('Programa no encontrado', 404);
     }
 

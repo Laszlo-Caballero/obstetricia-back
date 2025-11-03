@@ -5,12 +5,14 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Region } from './region.entity';
 import { Provincia } from './provincia.entity';
 import { Distrito } from './distrito.entity';
 import { Personal } from '../../personal/entities/personal.entity';
+import { Programa } from '../../programa/entities/programa.entity';
 
 @Entity()
 export class Posta {
@@ -67,4 +69,7 @@ export class Posta {
   @ManyToOne(() => Distrito, (distrito) => distrito.postas)
   @JoinColumn({ name: 'distritoId' })
   distrito: Distrito;
+
+  @OneToMany(() => Programa, (programa) => programa.posta)
+  programas: Programa[];
 }
