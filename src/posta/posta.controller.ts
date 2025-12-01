@@ -16,8 +16,9 @@ import { CreatePostaDto } from './dto/create-posta.dto';
 import { UpdatePostaDto } from './dto/update-posta.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FindByDistanceDto } from './dto/findByDistance.dto';
-// import { Auth } from 'src/auth/decorators/auth.decorator';
-// import { RolesEnum } from 'src/auth/enum/roles';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/auth/enum/roles';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Controller('posta')
 export class PostaController {
@@ -79,9 +80,9 @@ export class PostaController {
     return this.postaService.update(+id, updatePostaDto);
   }
 
-  // @Auth(RolesEnum.Administrador)
+  @Auth(RolesEnum.Administrador)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postaService.remove(+id);
+  remove(@Param('id') id: string, @Body() motivoDto: MotivoDto) {
+    return this.postaService.remove(+id, motivoDto);
   }
 }

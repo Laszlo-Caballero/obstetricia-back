@@ -11,6 +11,9 @@ import {
 import { PersonalService } from './personal.service';
 import { CreatePersonalDto } from './dto/create-personal.dto';
 import { UpdatePersonalDto } from './dto/update-personal.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/auth/enum/roles';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Controller('personal')
 export class PersonalController {
@@ -44,8 +47,9 @@ export class PersonalController {
     return this.personalService.update(+id, updatePersonalDto);
   }
 
+  @Auth(RolesEnum.Administrador)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.personalService.remove(+id);
+  remove(@Param('id') id: string, @Body() motivoDto: MotivoDto) {
+    return this.personalService.remove(+id, motivoDto);
   }
 }

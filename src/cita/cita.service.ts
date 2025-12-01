@@ -4,7 +4,7 @@ import { UpdateCitaDto } from './dto/update-cita.dto';
 
 @Injectable()
 export class CitaService {
-  create(createCitaDto: CreateCitaDto) {
+  createCita(createCitaDto: CreateCitaDto) {
     return 'This action adds a new cita';
   }
 

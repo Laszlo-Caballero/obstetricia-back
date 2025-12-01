@@ -28,6 +28,9 @@ export class Cita {
   @ManyToOne(() => Personal, (personal) => personal.citas)
   personal: Relation<Personal>;
 
+  @ManyToOne(() => Personal, (personal) => personal.citaCreada)
+  creadoPor: Relation<Personal>;
+
   @ManyToOne(() => Paciente, (paciente) => paciente.citas)
   paciente: Paciente;
 

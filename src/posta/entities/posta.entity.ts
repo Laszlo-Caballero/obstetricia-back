@@ -11,6 +11,8 @@ import { Region } from './region.entity';
 import { Provincia } from './provincia.entity';
 import { Distrito } from './distrito.entity';
 import { Personal } from '../../personal/entities/personal.entity';
+import { Motivo } from '../../motivos/entities/motivo.entity';
+import { OneToMany } from 'typeorm';
 
 @Entity()
 export class Posta {
@@ -67,4 +69,7 @@ export class Posta {
   @ManyToOne(() => Distrito, (distrito) => distrito.postas)
   @JoinColumn({ name: 'distritoId' })
   distrito: Distrito;
+
+  @OneToMany(() => Motivo, (motivo) => motivo.posta)
+  motivos: Motivo[];
 }

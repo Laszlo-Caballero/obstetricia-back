@@ -11,6 +11,8 @@ import { Distrito } from './entities/distrito.entity';
 import { PostaType } from './type/type';
 import { parse } from 'date-fns';
 import { FindByDistanceDto } from './dto/findByDistance.dto';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Injectable()
 export class PostaService {
@@ -23,6 +25,8 @@ export class PostaService {
     private readonly provinciaRepository: Repository<Provincia>,
     @InjectRepository(Distrito)
     private readonly distritoRepository: Repository<Distrito>,
+    @InjectRepository(Motivo)
+    private readonly motivoRepository: Repository<Motivo>,
   ) {}
 
   async create(createPostaDto: CreatePostaDto) {
@@ -198,7 +202,7 @@ export class PostaService {
     search?: string,
   ) {
     const [dbPosta, totalItems] = await this.postaRepository.findAndCount({
-      relations: ['region', 'provincia', 'distrito'],
+      relations: ['region', 'provincia', 'distrito', 'motivos'],
       take: limit,
       skip: (page - 1) * limit,
       where: {
@@ -236,7 +240,7 @@ export class PostaService {
   async findOne(id: number) {
     const findPosta = await this.postaRepository.findOne({
       where: { postaId: id },
-      relations: ['region', 'provincia', 'distrito'],
+      relations: ['region', 'provincia', 'distrito', 'motivos'],
     });
 
     if (!findPosta) {
@@ -294,18 +298,25 @@ export class PostaService {
     };
   }
 
-  async remove(id: number) {
+  async remove(id: number, motivoDto: MotivoDto) {
     const findPosta = await this.postaRepository.findOneBy({ postaId: id });
 
     if (!findPosta) {
-      throw new HttpException('Post not found', 404);
+      throw new HttpException('Posta no encontrada', 404);
     }
 
-    await this.postaRepository.update(id, { estado: false });
+    const newMotivo = this.motivoRepository.create({
+      posta: findPosta,
+      razon: motivoDto.razon,
+      nombreTabla: 'Posta',
+    });
 
+    await this.motivoRepository.insert(newMotivo);
+
+    await this.postaRepository.update(id, { estado: false });
     return {
       status: 200,
-      message: 'Post removed successfully',
+      message: 'Posta eliminada exitosamente',
       data: null,
     };
   }

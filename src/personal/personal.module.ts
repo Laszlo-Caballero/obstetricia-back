@@ -6,9 +6,12 @@ import { Personal } from './entities/personal.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { Posta } from 'src/posta/entities/posta.entity';
 import { TipoPersonal } from 'src/tipo-personal/entities/tipo-personal.entity';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Personal, Turno, Posta, TipoPersonal])],
+  imports: [
+    TypeOrmModule.forFeature([Personal, Turno, Posta, TipoPersonal, Motivo]),
+  ],
   controllers: [PersonalController],
   providers: [PersonalService],
 })

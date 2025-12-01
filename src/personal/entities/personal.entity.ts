@@ -4,6 +4,7 @@ import { Cita } from '../../cita/entities/cita.entity';
 import { Posta } from '../../posta/entities/posta.entity';
 import { TipoPersonal } from '../../tipo-personal/entities/tipo-personal.entity';
 import { Turno } from '../../turnos/entities/turno.entity';
+import { Motivo } from '../../motivos/entities/motivo.entity';
 import {
   Column,
   Entity,
@@ -76,6 +77,9 @@ export class Personal {
   @OneToMany(() => Cita, (cita) => cita.personal)
   citas: Cita[];
 
+  @OneToMany(() => Cita, (cita) => cita.creadoPor)
+  citaCreada: Cita[];
+
   @OneToMany(() => Programa, (programa) => programa.responsable)
   @JoinColumn({ name: 'programaId' })
   programa: Relation<Programa[]>;
@@ -83,4 +87,7 @@ export class Personal {
   @ManyToOne(() => Programa, (programa) => programa.personal)
   @JoinColumn({ name: 'asignadoId' })
   asignado: Relation<Programa>;
+
+  @OneToMany(() => Motivo, (motivo) => motivo.personal)
+  motivos: Motivo[];
 }

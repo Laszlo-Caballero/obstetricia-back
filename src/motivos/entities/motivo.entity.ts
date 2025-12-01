@@ -8,6 +8,8 @@ import {
   Relation,
 } from 'typeorm';
 import { Programa } from '../../programa/entities/programa.entity';
+import { Personal } from '../../personal/entities/personal.entity';
+import { Posta } from '../../posta/entities/posta.entity';
 
 @Entity()
 export class Motivo {
@@ -29,4 +31,10 @@ export class Motivo {
 
   @ManyToOne(() => Medicina, (medicina) => medicina.motivo)
   medicina: Relation<Medicina>;
+
+  @ManyToOne(() => Personal, (personal) => personal.motivos)
+  personal: Relation<Personal>;
+
+  @ManyToOne(() => Posta, (posta) => posta.motivos)
+  posta: Relation<Posta>;
 }

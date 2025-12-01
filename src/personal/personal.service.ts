@@ -7,6 +7,8 @@ import { Turno } from 'src/turnos/entities/turno.entity';
 import { Posta } from 'src/posta/entities/posta.entity';
 import { TipoPersonal } from 'src/tipo-personal/entities/tipo-personal.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
 
 @Injectable()
 export class PersonalService {
@@ -19,6 +21,8 @@ export class PersonalService {
     private readonly postaRepository: Repository<Posta>,
     @InjectRepository(TipoPersonal)
     private readonly tipoPersonalRepository: Repository<TipoPersonal>,
+    @InjectRepository(Motivo)
+    private readonly motivoRepository: Repository<Motivo>,
   ) {}
 
   async create(createPersonalDto: CreatePersonalDto) {
@@ -80,7 +84,7 @@ export class PersonalService {
         ...(search && { nombres: Like(`%${search}%`) }),
         ...(tipoPersonalId && { tipoPersonal: { tipoPersonalId } }),
       },
-      relations: ['turno', 'tipoPersonal', 'posta', 'user'],
+      relations: ['turno', 'tipoPersonal', 'posta', 'user', 'motivos'],
       take: limit,
       skip: (page - 1) * limit,
     });
@@ -99,7 +103,7 @@ export class PersonalService {
   async findOne(id: number) {
     const personal = await this.personalRepository.findOne({
       where: { personalId: id },
-      relations: ['turno', 'tipoPersonal', 'posta', 'user'],
+      relations: ['turno', 'tipoPersonal', 'posta', 'user', 'motivos'],
     });
 
     if (!personal) {
@@ -173,18 +177,25 @@ export class PersonalService {
     };
   }
 
-  async remove(id: number) {
-    const findOne = await this.personalRepository.findOneBy({ personalId: id });
-    if (!findOne) {
+  async remove(id: number, motivoDto: MotivoDto) {
+    const findPersonal = await this.personalRepository.findOne({
+      where: { personalId: id },
+    });
+
+    if (!findPersonal) {
       throw new HttpException('Personal no encontrado', 404);
     }
 
+    const newMotivo = this.motivoRepository.create({
+      personal: findPersonal,
+      razon: motivoDto.razon,
+      nombreTabla: 'Personal',
+    });
+
+    await this.motivoRepository.insert(newMotivo);
+
     await this.personalRepository.update(id, { estado: false });
 
-    return {
-      message: 'Personal eliminado exitosamente',
-      status: 200,
-      data: null,
-    };
+    return { status: 200, message: 'OK', data: null };
   }
 }
