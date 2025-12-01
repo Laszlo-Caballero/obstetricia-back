@@ -11,11 +11,13 @@ import {
   JoinTable,
   Relation,
   Column,
+  OneToMany,
 } from 'typeorm';
 import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 import { Personal } from '../../personal/entities/personal.entity';
 import { Turno } from '../../turnos/entities/turno.entity';
 import { Programa } from '../../programa/entities/programa.entity';
+import { Motivo } from '../../motivos/entities/motivo.entity';
 
 @Entity()
 export class Cita {
@@ -60,4 +62,7 @@ export class Cita {
 
   @Column({ default: true })
   estado: boolean;
+
+  @OneToMany(() => Motivo, (motivo) => motivo.cita)
+  motivos: Relation<Motivo[]>;
 }

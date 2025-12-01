@@ -219,13 +219,21 @@ export class MedicinaService {
     await this.motivoRepository.insert(newMotivo);
 
     await this.medicinaRepository.update(id, { estado: false });
-    const findAllMedicina = await this.medicinaRepository.find();
+    const [findAllMedicina, totalItems] =
+      await this.medicinaRepository.findAndCount({
+        relations: ['categoria', 'presentacion', 'recurso', 'motivo'],
+        take: 10,
+      });
 
-    await this.redisService.set('medicinas', findAllMedicina);
     return {
       status: 200,
       message: 'Medicine removed successfully',
-      data: null,
+      data: findAllMedicina,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / 10),
+        currentPage: 1,
+      },
     };
   }
 

@@ -8,6 +8,8 @@ import { Paciente } from 'src/pacientes/entities/paciente.entity';
 import { PruebaLaboratorio } from 'src/prueba-laboratorio/entities/prueba-laboratorio.entity';
 import { Diagnostico } from 'src/diagnostico/entities/diagnostico.entity';
 import { Programa } from 'src/programa/entities/programa.entity';
+import { Cita } from './entities/cita.entity';
+import { Turno } from 'src/turnos/entities/turno.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { Programa } from 'src/programa/entities/programa.entity';
       PruebaLaboratorio,
       Diagnostico,
       Programa,
+      Cita,
+      Turno,
     ]),
   ],
   controllers: [CitaController],

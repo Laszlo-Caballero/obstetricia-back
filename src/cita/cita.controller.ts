@@ -3,36 +3,36 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Req,
+  Query,
 } from '@nestjs/common';
 import { CitaService } from './cita.service';
 import { CreateCitaDto } from './dto/create-cita.dto';
-import { UpdateCitaDto } from './dto/update-cita.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RequestUser } from 'src/auth/interface/type';
+import { QueryCitaDto } from './dto/query.dto';
 
 @Controller('cita')
 export class CitaController {
   constructor(private readonly citaService: CitaService) {}
 
+  @Auth()
   @Post()
-  create(@Body() createCitaDto: CreateCitaDto) {
-    return this.citaService.createCita(createCitaDto);
+  create(@Body() createCitaDto: CreateCitaDto, @Req() req: RequestUser) {
+    return this.citaService.createCita(createCitaDto, req.user);
   }
 
+  @Auth()
   @Get()
-  findAll() {
-    return this.citaService.findAll();
+  findAll(@Query() query: QueryCitaDto) {
+    return this.citaService.findAll(query);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.citaService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCitaDto: UpdateCitaDto) {
-    return this.citaService.update(+id, updateCitaDto);
   }
 
   @Delete(':id')
