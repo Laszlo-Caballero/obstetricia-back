@@ -1,5 +1,6 @@
 import { Personal } from '../../personal/entities/personal.entity';
 import { Cita } from '../../cita/entities/cita.entity';
+import { Motivo } from '../../motivos/entities/motivo.entity';
 import {
   Column,
   Entity,
@@ -39,4 +40,7 @@ export class Programa {
 
   @OneToMany(() => Personal, (personal) => personal.asignado)
   personal: Personal[];
+
+  @OneToMany(() => Motivo, (motivo) => motivo.programa)
+  motivos: Motivo[];
 }

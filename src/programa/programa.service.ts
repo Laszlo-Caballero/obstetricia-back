@@ -7,6 +7,8 @@ import { Programa } from './entities/programa.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { QueryDto } from './dto/query.dto';
 import { QueryConditions } from 'src/interface/type';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Injectable()
 export class ProgramaService {
@@ -15,6 +17,8 @@ export class ProgramaService {
     private programaRepository: Repository<Programa>,
     @InjectRepository(Personal)
     private personalRepository: Repository<Personal>,
+    @InjectRepository(Motivo)
+    private motivoRepository: Repository<Motivo>,
   ) {}
 
   async create(createProgramaDto: CreateProgramaDto) {
@@ -64,6 +68,7 @@ export class ProgramaService {
         'personal',
         'responsable.user',
         'responsable.user.recurso',
+        'motivos',
       ],
       where,
       take: limit,
@@ -129,7 +134,7 @@ export class ProgramaService {
     return { status: 200, message: 'OK', data: null };
   }
 
-  async remove(id: number) {
+  async remove(id: number, motivoDto: MotivoDto) {
     const findPrograma = await this.programaRepository.findOne({
       where: { programaId: id },
     });
@@ -137,6 +142,14 @@ export class ProgramaService {
     if (!findPrograma) {
       throw new HttpException('Programa no encontrado', 404);
     }
+
+    const newMotivo = this.motivoRepository.create({
+      programa: findPrograma,
+      razon: motivoDto.razon,
+      nombreTabla: 'Programa',
+    });
+
+    await this.motivoRepository.insert(newMotivo);
 
     await this.programaRepository.update(id, { estado: false });
 

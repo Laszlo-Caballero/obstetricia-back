@@ -14,6 +14,7 @@ import { UpdateProgramaDto } from './dto/update-programa.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RolesEnum } from 'src/auth/enum/roles';
 import { QueryDto } from './dto/query.dto';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Controller('programa')
 export class ProgramaController {
@@ -44,7 +45,7 @@ export class ProgramaController {
 
   @Auth(RolesEnum.Administrador)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.programaService.remove(+id);
+  remove(@Param('id') id: string, @Body() motivoDto: MotivoDto) {
+    return this.programaService.remove(+id, motivoDto);
   }
 }

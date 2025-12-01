@@ -60,6 +60,6 @@ export class Medicina {
   @ManyToOne(() => Recurso, (recurso) => recurso.medicinas)
   recurso: Recurso;
 
-  @ManyToOne(() => Motivo, (motivo) => motivo.medicina)
-  motivo: Motivo;
+  @OneToMany(() => Motivo, (motivo) => motivo.medicina)
+  motivo: Motivo[];
 }
