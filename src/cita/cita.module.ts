@@ -10,6 +10,7 @@ import { Diagnostico } from 'src/diagnostico/entities/diagnostico.entity';
 import { Programa } from 'src/programa/entities/programa.entity';
 import { Cita } from './entities/cita.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { Turno } from 'src/turnos/entities/turno.entity';
       Programa,
       Cita,
       Turno,
+      Motivo,
     ]),
   ],
   controllers: [CitaController],

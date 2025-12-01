@@ -12,6 +12,8 @@ import { Programa } from 'src/programa/entities/programa.entity';
 import { JwtPayload } from 'src/auth/interface/type';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { QueryCitaDto } from './dto/query.dto';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Injectable()
 export class CitaService {
@@ -32,6 +34,8 @@ export class CitaService {
     private readonly programaRepository: Repository<Programa>,
     @InjectRepository(Turno)
     private readonly turnoRepository: Repository<Turno>,
+    @InjectRepository(Motivo)
+    private readonly motivoRepository: Repository<Motivo>,
   ) {}
 
   async createCita(createCitaDto: CreateCitaDto, user: JwtPayload) {
@@ -141,7 +145,39 @@ export class CitaService {
     };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cita`;
+  async remove(id: number, motivo: MotivoDto) {
+    const cita = await this.citaRepository.findOneBy({
+      citaId: id,
+    });
+
+    if (!cita) {
+      throw new HttpException('Cita no encontrada', HttpStatus.NOT_FOUND);
+    }
+
+    await this.citaRepository.update(id, { estado: false });
+
+    const newMotivo = this.motivoRepository.create({
+      cita: cita,
+      razon: motivo.razon,
+      nombreTabla: 'Cita',
+    });
+
+    await this.motivoRepository.save(newMotivo);
+
+    const [findAllCitas, totalCitas] = await this.citaRepository.findAndCount({
+      relations: ['paciente', 'personal', 'creadoPor', 'programa', 'turno'],
+      take: 10,
+    });
+
+    return {
+      message: 'Cita removed successfully',
+      data: findAllCitas,
+      status: HttpStatus.OK,
+      metadata: {
+        totalItems: totalCitas,
+        totalPages: Math.ceil(totalCitas / 10),
+        currentPage: 1,
+      },
+    };
   }
 }

@@ -1,6 +1,13 @@
 import { Medicina } from '../../farmacia/medicina/entities/medicina.entity';
 import { Auth } from '../../auth/entities/auth.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
+import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 
 @Entity()
 export class Recurso {
@@ -24,4 +31,7 @@ export class Recurso {
 
   @OneToMany(() => Medicina, (medicina) => medicina.recurso)
   medicinas: Medicina[];
+
+  @OneToMany(() => PruebaLaboratorio, (prueba) => prueba.documento)
+  pruebasLaboratorio: Relation<PruebaLaboratorio[]>;
 }

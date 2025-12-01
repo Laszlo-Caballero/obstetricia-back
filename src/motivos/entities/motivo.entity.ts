@@ -11,6 +11,7 @@ import { Programa } from '../../programa/entities/programa.entity';
 import { Personal } from '../../personal/entities/personal.entity';
 import { Posta } from '../../posta/entities/posta.entity';
 import { Cita } from '../../cita/entities/cita.entity';
+import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 
 @Entity()
 export class Motivo {
@@ -41,4 +42,7 @@ export class Motivo {
 
   @ManyToOne(() => Cita, (cita) => cita.motivos)
   cita: Relation<Cita>;
+
+  @ManyToOne(() => PruebaLaboratorio, (prueba) => prueba.motivos)
+  pruebaLaboratorio: Relation<PruebaLaboratorio>;
 }

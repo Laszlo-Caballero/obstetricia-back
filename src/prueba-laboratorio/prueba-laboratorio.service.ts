@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePruebaLaboratorioDto } from './dto/create-prueba-laboratorio.dto';
-import { UpdatePruebaLaboratorioDto } from './dto/update-prueba-laboratorio.dto';
 
 @Injectable()
 export class PruebaLaboratorioService {
@@ -14,10 +13,6 @@ export class PruebaLaboratorioService {
 
   findOne(id: number) {
     return `This action returns a #${id} pruebaLaboratorio`;
-  }
-
-  update(id: number, updatePruebaLaboratorioDto: UpdatePruebaLaboratorioDto) {
-    return `This action updates a #${id} pruebaLaboratorio`;
   }
 
   remove(id: number) {

@@ -17,6 +17,7 @@ import {
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { PruebaLaboratorio } from '../../prueba-laboratorio/entities/prueba-laboratorio.entity';
 
 @Entity()
 export class Personal {
@@ -90,4 +91,7 @@ export class Personal {
 
   @OneToMany(() => Motivo, (motivo) => motivo.personal)
   motivos: Motivo[];
+
+  @OneToMany(() => PruebaLaboratorio, (prueba) => prueba.responsable)
+  pruebasLaboratorio: Relation<PruebaLaboratorio[]>;
 }

@@ -13,6 +13,7 @@ import { CreateCitaDto } from './dto/create-cita.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RequestUser } from 'src/auth/interface/type';
 import { QueryCitaDto } from './dto/query.dto';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Controller('cita')
 export class CitaController {
@@ -36,7 +37,7 @@ export class CitaController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.citaService.remove(+id);
+  remove(@Param('id') id: string, @Body() body: MotivoDto) {
+    return this.citaService.remove(+id, body);
   }
 }
