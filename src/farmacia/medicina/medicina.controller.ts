@@ -12,6 +12,7 @@ import {
 import { MedicinaService } from './medicina.service';
 import { CreateMedicinaDto } from './dto/create-medicina.dto';
 import { UpdateMedicinaDto } from './dto/update-medicina.dto';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Controller('farmacia/medicina')
 export class MedicinaController {
@@ -75,7 +76,7 @@ export class MedicinaController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.medicinaService.remove(+id);
+  remove(@Param('id') id: string, @Body() motivo: MotivoDto) {
+    return this.medicinaService.remove(+id, motivo);
   }
 }

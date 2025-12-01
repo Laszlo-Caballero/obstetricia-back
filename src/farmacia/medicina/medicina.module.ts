@@ -6,10 +6,17 @@ import { Medicina } from './entities/medicina.entity';
 import { Categoria } from '../categoria/entities/categoria.entity';
 import { Presentacion } from '../presentacion/entities/presentacion.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Medicina, Categoria, Presentacion, Recurso]),
+    TypeOrmModule.forFeature([
+      Medicina,
+      Categoria,
+      Presentacion,
+      Recurso,
+      Motivo,
+    ]),
   ],
   controllers: [MedicinaController],
   providers: [MedicinaService],

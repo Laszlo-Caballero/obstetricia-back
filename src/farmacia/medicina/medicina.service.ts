@@ -9,6 +9,8 @@ import { Presentacion } from '../presentacion/entities/presentacion.entity';
 import { RedisService } from 'src/redis/redis.service';
 import { Workbook } from 'exceljs';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 
 @Injectable()
 export class MedicinaService {
@@ -23,6 +25,8 @@ export class MedicinaService {
     private readonly presentacionRepository: Repository<Presentacion>,
     @InjectRepository(Recurso)
     private readonly recursoRepository: Repository<Recurso>,
+    @InjectRepository(Motivo)
+    private readonly motivoRepository: Repository<Motivo>,
     private readonly redisService: RedisService,
   ) {}
 
@@ -78,7 +82,7 @@ export class MedicinaService {
   ) {
     const [dbMedicina, totalItems] = await this.medicinaRepository.findAndCount(
       {
-        relations: ['categoria', 'presentacion', 'recurso'],
+        relations: ['categoria', 'presentacion', 'recurso', 'motivo'],
         take: limit,
         skip: (page - 1) * limit,
         where: {
@@ -138,7 +142,7 @@ export class MedicinaService {
 
   async findOne(id: number) {
     const findMedicina = await this.medicinaRepository.findOne({
-      relations: ['categoria', 'presentacion', 'recurso'],
+      relations: ['categoria', 'presentacion', 'recurso', 'motivo'],
       where: { medicinaId: id },
     });
 
@@ -197,7 +201,7 @@ export class MedicinaService {
     };
   }
 
-  async remove(id: number) {
+  async remove(id: number, motivoDto: MotivoDto) {
     const findMedicina = await this.medicinaRepository.findOneBy({
       medicinaId: id,
     });
@@ -205,6 +209,14 @@ export class MedicinaService {
     if (!findMedicina) {
       throw new HttpException('Medicine not found', 404);
     }
+
+    const newMotivo = this.motivoRepository.create({
+      medicina: findMedicina,
+      razon: motivoDto.razon,
+      nombreTabla: 'Medicina',
+    });
+
+    await this.motivoRepository.insert(newMotivo);
 
     await this.medicinaRepository.update(id, { estado: false });
     const findAllMedicina = await this.medicinaRepository.find();
