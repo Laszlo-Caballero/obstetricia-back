@@ -196,6 +196,20 @@ export class PersonalService {
 
     await this.personalRepository.update(id, { estado: false });
 
-    return { status: 200, message: 'OK', data: null };
+    const [personal, totalItems] = await this.personalRepository.findAndCount({
+      relations: ['turno', 'tipoPersonal', 'posta', 'user', 'motivos'],
+      take: 10,
+    });
+
+    return {
+      status: 200,
+      message: 'OK',
+      data: personal,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / 10),
+        currentPage: 1,
+      },
+    };
   }
 }

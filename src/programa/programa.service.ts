@@ -153,6 +153,28 @@ export class ProgramaService {
 
     await this.programaRepository.update(id, { estado: false });
 
-    return { status: 200, message: 'OK', data: null };
+    const [programas, totalItems] = await this.programaRepository.findAndCount({
+      relations: [
+        'responsable',
+        'personal',
+        'citas',
+        'personal',
+        'responsable.user',
+        'responsable.user.recurso',
+        'motivos',
+      ],
+      take: 10,
+    });
+
+    return {
+      status: 200,
+      message: 'OK',
+      data: programas,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / 10),
+        currentPage: 1,
+      },
+    };
   }
 }

@@ -314,10 +314,21 @@ export class PostaService {
     await this.motivoRepository.insert(newMotivo);
 
     await this.postaRepository.update(id, { estado: false });
+
+    const [dbPosta, totalItems] = await this.postaRepository.findAndCount({
+      relations: ['region', 'provincia', 'distrito', 'motivos'],
+      take: 10,
+    });
+
     return {
       status: 200,
       message: 'Posta eliminada exitosamente',
-      data: null,
+      data: dbPosta,
+      metadata: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / 10),
+        currentPage: 1,
+      },
     };
   }
 

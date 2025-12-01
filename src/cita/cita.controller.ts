@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CitaService } from './cita.service';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
@@ -9,7 +17,7 @@ export class CitaController {
 
   @Post()
   create(@Body() createCitaDto: CreateCitaDto) {
-    return this.citaService.create(createCitaDto);
+    return this.citaService.createCita(createCitaDto);
   }
 
   @Get()
