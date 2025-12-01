@@ -14,6 +14,10 @@ import { Turno } from 'src/turnos/entities/turno.entity';
 import { QueryCitaDto } from './dto/query.dto';
 import { Motivo } from 'src/motivos/entities/motivo.entity';
 import { MotivoDto } from 'src/motivos/dto/motivo.dto';
+import { CompleteCitaDto } from './dto/complete-cita.dto';
+import { RecetaMedicina } from 'src/farmacia/receta-medicina/entities/receta-medicina.entity';
+import { Medicina } from 'src/farmacia/medicina/entities/medicina.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Injectable()
 export class CitaService {
@@ -36,6 +40,12 @@ export class CitaService {
     private readonly turnoRepository: Repository<Turno>,
     @InjectRepository(Motivo)
     private readonly motivoRepository: Repository<Motivo>,
+    @InjectRepository(RecetaMedicina)
+    private readonly recetaMedicinaRepository: Repository<RecetaMedicina>,
+    @InjectRepository(Medicina)
+    private readonly medicinaRepository: Repository<Medicina>,
+    @InjectRepository(Recurso)
+    private readonly recursoRepository: Repository<Recurso>,
   ) {}
 
   async createCita(createCitaDto: CreateCitaDto, user: JwtPayload) {
@@ -130,6 +140,8 @@ export class CitaService {
         'diagnosticos',
         'laboratorios',
         'receta',
+        'receta.recetaMedicinas',
+        'receta.recetaMedicinas.medicina',
         'motivos',
       ],
     });
@@ -178,6 +190,100 @@ export class CitaService {
         totalPages: Math.ceil(totalCitas / 10),
         currentPage: 1,
       },
+    };
+  }
+
+  async completeCita(id: number, body: CompleteCitaDto) {
+    const findCita = await this.citaRepository.findOneBy({
+      citaId: id,
+    });
+
+    if (!findCita) {
+      throw new HttpException('Cita no encontrada', HttpStatus.NOT_FOUND);
+    }
+
+    const { receta, diagnosticos, laboratorios } = body;
+
+    const { detalle, recetasMedicinas } = receta;
+
+    const nuevaReceta = this.recetaRepository.create({
+      detalle,
+      cita: findCita,
+    });
+
+    const savedReceta = await this.recetaRepository.save(nuevaReceta);
+
+    await Promise.all(
+      recetasMedicinas.map(async (rm) => {
+        const { medicinaId, ...rest } = rm;
+        const findMedicina = await this.medicinaRepository.findOneBy({
+          medicinaId,
+        });
+
+        if (!findMedicina) {
+          throw new HttpException(
+            `Medicina con ID ${medicinaId} no encontrada`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        const nuevaRecetaMedicina = this.recetaMedicinaRepository.create({
+          medicina: findMedicina,
+          receta: savedReceta,
+          ...rest,
+        });
+
+        return this.recetaMedicinaRepository.save(nuevaRecetaMedicina);
+      }),
+    );
+
+    const diagnosticosSave = await Promise.all(
+      diagnosticos.map(async (diag) => {
+        const nuevaDiagnostico = this.diagnosticoRepository.create({
+          ...diag,
+        });
+        return this.diagnosticoRepository.save(nuevaDiagnostico);
+      }),
+    );
+
+    findCita.diagnosticos = diagnosticosSave;
+
+    const laboratoriosSave = await Promise.all(
+      laboratorios.map(async (lab) => {
+        const { estado, nombre, recursoId } = lab;
+
+        let recurso: Recurso | null = null;
+        if (recursoId) {
+          const findRecurso = await this.recursoRepository.findOneBy({
+            recursoId,
+          });
+          if (!findRecurso) {
+            throw new HttpException(
+              `Recurso de laboratorio con ID ${recursoId} no encontrado`,
+              HttpStatus.NOT_FOUND,
+            );
+          }
+          recurso = findRecurso;
+        }
+
+        const nuevaLaboratorio = this.pruebaLaboratorioRepository.create({
+          estado,
+          nombre,
+          ...(recurso ? { documento: recurso } : {}),
+        });
+
+        return this.pruebaLaboratorioRepository.save(nuevaLaboratorio);
+      }),
+    );
+
+    findCita.laboratorios = laboratoriosSave;
+
+    const updatedCita = await this.citaRepository.save(findCita);
+
+    return {
+      message: 'Cita completed successfully',
+      data: updatedCita,
+      status: HttpStatus.OK,
     };
   }
 }

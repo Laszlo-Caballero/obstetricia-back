@@ -7,6 +7,7 @@ import {
   Delete,
   Req,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { CitaService } from './cita.service';
 import { CreateCitaDto } from './dto/create-cita.dto';
@@ -14,6 +15,7 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RequestUser } from 'src/auth/interface/type';
 import { QueryCitaDto } from './dto/query.dto';
 import { MotivoDto } from 'src/motivos/dto/motivo.dto';
+import { CompleteCitaDto } from './dto/complete-cita.dto';
 
 @Controller('cita')
 export class CitaController {
@@ -34,6 +36,12 @@ export class CitaController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.citaService.findOne(+id);
+  }
+
+  @Auth()
+  @Patch('/completar/:id')
+  completarCita(@Param('id') id: string, @Body() body: CompleteCitaDto) {
+    return this.citaService.completeCita(+id, body);
   }
 
   @Delete(':id')

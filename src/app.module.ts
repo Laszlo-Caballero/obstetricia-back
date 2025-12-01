@@ -26,7 +26,6 @@ import { join } from 'path';
 import { RecursoModule } from './recurso/recurso.module';
 import { PresentacionModule } from './farmacia/presentacion/presentacion.module';
 import { CategoriaModule } from './farmacia/categoria/categoria.module';
-import { RecetaMedicinaModule } from './farmacia/receta-medicina/receta-medicina.module';
 import { FilesModule } from './galeria/files.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DocumentacionModule } from './documentacion/documentacion.module';
@@ -81,7 +80,6 @@ import { MotivosModule } from './motivos/motivos.module';
     RecursoModule,
     PresentacionModule,
     CategoriaModule,
-    RecetaMedicinaModule,
     FilesModule,
     DocumentacionModule,
     BlogModule,

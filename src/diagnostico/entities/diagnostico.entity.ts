@@ -9,6 +9,9 @@ export class Diagnostico {
   @Column()
   nombre: string;
 
+  @Column({ type: 'varchar', length: 'max' })
+  descripcion: string;
+
   @Column({ default: true })
   estado: boolean;
 

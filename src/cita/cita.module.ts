@@ -11,6 +11,9 @@ import { Programa } from 'src/programa/entities/programa.entity';
 import { Cita } from './entities/cita.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { RecetaMedicina } from 'src/farmacia/receta-medicina/entities/receta-medicina.entity';
+import { Medicina } from 'src/farmacia/medicina/entities/medicina.entity';
+import { Recurso } from 'src/recurso/entities/recurso.entity';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { Motivo } from 'src/motivos/entities/motivo.entity';
       Cita,
       Turno,
       Motivo,
+      RecetaMedicina,
+      Medicina,
+      Recurso,
     ]),
   ],
   controllers: [CitaController],

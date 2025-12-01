@@ -4,13 +4,12 @@ import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
 } from 'typeorm';
+import { Motivo } from '../../../motivos/entities/motivo.entity';
 
 @Entity()
 export class Receta {
@@ -29,6 +28,9 @@ export class Receta {
   @OneToOne(() => Cita, (cita) => cita.receta)
   @JoinColumn()
   cita: Relation<Cita>;
+
+  @OneToMany(() => Motivo, (motivo) => motivo.receta)
+  motivos: Relation<Motivo[]>;
 
   @OneToMany(() => RecetaMedicina, (recetaMedicina) => recetaMedicina.receta)
   recetaMedicinas: RecetaMedicina[];
