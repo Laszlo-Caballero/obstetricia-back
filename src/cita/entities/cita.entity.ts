@@ -60,8 +60,8 @@ export class Cita {
   @Column({ default: '' })
   nota: string;
 
-  @Column({ default: true })
-  estado: boolean;
+  @Column({ default: 'Pendiente' })
+  estado: string;
 
   @OneToMany(() => Motivo, (motivo) => motivo.cita)
   motivos: Relation<Motivo[]>;

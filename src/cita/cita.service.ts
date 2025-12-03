@@ -166,7 +166,7 @@ export class CitaService {
       throw new HttpException('Cita no encontrada', HttpStatus.NOT_FOUND);
     }
 
-    await this.citaRepository.update(id, { estado: false });
+    await this.citaRepository.update(id, { estado: 'Cancelada' });
 
     const newMotivo = this.motivoRepository.create({
       cita: cita,
@@ -277,6 +277,7 @@ export class CitaService {
     );
 
     findCita.laboratorios = laboratoriosSave;
+    findCita.estado = 'Completada';
 
     const updatedCita = await this.citaRepository.save(findCita);
 
