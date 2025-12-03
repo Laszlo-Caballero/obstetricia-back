@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Receta } from 'src/farmacia/receta/entities/receta.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Cita } from './entities/cita.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
@@ -124,6 +124,43 @@ export class CitaService {
         totalPages: Math.ceil(totalCitas / query.limit),
         currentPage: query.page,
       },
+      status: HttpStatus.OK,
+    };
+  }
+
+  async findCitasHoy(user: JwtPayload) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const findCitas = await this.citaRepository.find({
+      where: {
+        personal: {
+          user: {
+            userId: user.userId,
+          },
+        },
+        fecha: Between(today, tomorrow),
+      },
+      relations: [
+        'paciente',
+        'personal',
+        'creadoPor',
+        'programa',
+        'turno',
+        'diagnosticos',
+        'laboratorios',
+        'receta',
+        'receta.recetaMedicinas',
+        'receta.recetaMedicinas.medicina',
+        'motivos',
+      ],
+    });
+
+    return {
+      message: 'Citas de hoy retrieved successfully',
+      data: findCitas,
       status: HttpStatus.OK,
     };
   }

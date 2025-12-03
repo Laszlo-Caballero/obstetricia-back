@@ -37,6 +37,11 @@ export class CitaController {
   findOne(@Param('id') id: string) {
     return this.citaService.findOne(+id);
   }
+  @Auth()
+  @Get('personal/hoy')
+  findCitasHoy(@Req() req: RequestUser) {
+    return this.citaService.findCitasHoy(req.user);
+  }
 
   @Auth()
   @Patch('/completar/:id')

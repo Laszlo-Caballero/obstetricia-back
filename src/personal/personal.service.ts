@@ -9,6 +9,7 @@ import { TipoPersonal } from 'src/tipo-personal/entities/tipo-personal.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MotivoDto } from 'src/motivos/dto/motivo.dto';
 import { Motivo } from 'src/motivos/entities/motivo.entity';
+import { RolesEnum } from 'src/auth/enum/roles';
 
 @Injectable()
 export class PersonalService {
@@ -127,6 +128,25 @@ export class PersonalService {
       message: 'Personal encontrado exitosamente',
       status: 200,
       data: personal,
+    };
+  }
+
+  async findObstetras() {
+    const obstetras = await this.personalRepository.find({
+      where: {
+        user: {
+          role: {
+            roleName: RolesEnum.Obstetra,
+          },
+        },
+      },
+      relations: ['turno', 'tipoPersonal', 'posta', 'user', 'motivos'],
+    });
+
+    return {
+      message: 'Obstetras encontrados exitosamente',
+      status: 200,
+      data: obstetras,
     };
   }
 

@@ -39,6 +39,11 @@ export class PersonalController {
     return this.personalService.findAllNotUser();
   }
 
+  @Get('obstetras')
+  findObstetras() {
+    return this.personalService.findObstetras();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.personalService.findOne(+id);
