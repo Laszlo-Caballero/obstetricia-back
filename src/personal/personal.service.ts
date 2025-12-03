@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePersonalDto } from './dto/create-personal.dto';
 import { UpdatePersonalDto } from './dto/update-personal.dto';
-import { Like, Repository } from 'typeorm';
+import { Like, Repository, IsNull } from 'typeorm';
 import { Personal } from './entities/personal.entity';
 import { Turno } from 'src/turnos/entities/turno.entity';
 import { Posta } from 'src/posta/entities/posta.entity';
@@ -97,6 +97,19 @@ export class PersonalService {
         totalPages: Math.ceil(totalItems / limit),
         currentPage: page,
       },
+    };
+  }
+
+  async findAllNotUser() {
+    const personal = await this.personalRepository.find({
+      where: { user: IsNull(), estado: true },
+      relations: ['turno', 'tipoPersonal', 'posta', 'motivos'],
+    });
+
+    return {
+      message: 'Personal sin usuario encontrado exitosamente',
+      status: 200,
+      data: personal,
     };
   }
 

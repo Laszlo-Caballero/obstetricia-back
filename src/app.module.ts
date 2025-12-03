@@ -32,6 +32,7 @@ import { DocumentacionModule } from './documentacion/documentacion.module';
 import { BlogModule } from './blog/blog.module';
 import { BlogCategoryModule } from './blog/blog-category/blog-category.module';
 import { MotivosModule } from './motivos/motivos.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -85,6 +86,7 @@ import { MotivosModule } from './motivos/motivos.module';
     BlogModule,
     BlogCategoryModule,
     MotivosModule,
+    UsuariosModule,
   ],
   controllers: [],
   providers: [RedisService],

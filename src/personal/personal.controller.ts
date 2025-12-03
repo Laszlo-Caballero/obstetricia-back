@@ -34,6 +34,11 @@ export class PersonalController {
     return this.personalService.findAll(limit, page, search, tipoPersonalId);
   }
 
+  @Get('not-user')
+  findAllNotUser() {
+    return this.personalService.findAllNotUser();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.personalService.findOne(+id);

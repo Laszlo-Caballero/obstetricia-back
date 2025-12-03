@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Body, Param, Delete, Query } from '@nestjs/common';
 import { PruebaLaboratorioService } from './prueba-laboratorio.service';
-import { CreatePruebaLaboratorioDto } from './dto/create-prueba-laboratorio.dto';
+import { QueryPruebaLaboratorioDto } from './dto/query.dto';
 
 @Controller('prueba-laboratorio')
 export class PruebaLaboratorioController {
@@ -8,14 +8,9 @@ export class PruebaLaboratorioController {
     private readonly pruebaLaboratorioService: PruebaLaboratorioService,
   ) {}
 
-  @Post()
-  create(@Body() createPruebaLaboratorioDto: CreatePruebaLaboratorioDto) {
-    return this.pruebaLaboratorioService.create(createPruebaLaboratorioDto);
-  }
-
   @Get()
-  findAll() {
-    return this.pruebaLaboratorioService.findAll();
+  findAll(@Query() query: QueryPruebaLaboratorioDto) {
+    return this.pruebaLaboratorioService.findAll(query);
   }
 
   @Get(':id')
