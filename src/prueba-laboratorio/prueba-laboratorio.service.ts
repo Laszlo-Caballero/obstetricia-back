@@ -17,6 +17,16 @@ export class PruebaLaboratorioService {
     const [data, total] = await this.pruebaLaboratorioRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,
+      relations: {
+        cita: {
+          personal: {
+            user: {
+              recurso: true,
+            },
+          },
+          paciente: true,
+        },
+      },
     });
 
     return {
