@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InjectModel } from '@nestjs/mongoose';
 import { Receta } from 'src/farmacia/receta/entities/receta.entity';
 import { Between, Repository } from 'typeorm';
+import { Model } from 'mongoose';
 import { Cita } from './entities/cita.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
@@ -18,6 +20,10 @@ import { CompleteCitaDto } from './dto/complete-cita.dto';
 import { RecetaMedicina } from 'src/farmacia/receta-medicina/entities/receta-medicina.entity';
 import { Medicina } from 'src/farmacia/medicina/entities/medicina.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import {
+  CitaCompletada,
+  CitaCompletadaDocument,
+} from './entities/cita-completada.entity';
 
 @Injectable()
 export class CitaService {
@@ -46,6 +52,8 @@ export class CitaService {
     private readonly medicinaRepository: Repository<Medicina>,
     @InjectRepository(Recurso)
     private readonly recursoRepository: Repository<Recurso>,
+    @InjectModel(CitaCompletada.name)
+    private readonly citaCompletadaModel: Model<CitaCompletadaDocument>,
   ) {}
 
   async createCita(createCitaDto: CreateCitaDto, user: JwtPayload) {
@@ -317,6 +325,42 @@ export class CitaService {
     findCita.estado = 'Completada';
 
     const updatedCita = await this.citaRepository.save(findCita);
+
+    // Guardar en MongoDB
+    const citaCompletadaData = await this.citaRepository.findOne({
+      where: { citaId: id },
+      relations: [
+        'paciente',
+        'personal',
+        'creadoPor',
+        'programa',
+        'turno',
+        'receta',
+        'diagnosticos',
+        'laboratorios',
+        'motivos',
+      ],
+    });
+
+    if (citaCompletadaData) {
+      const citaCompletadaMongo = new this.citaCompletadaModel({
+        citaId: citaCompletadaData.citaId,
+        receta: citaCompletadaData.receta,
+        personal: citaCompletadaData.personal,
+        creadoPor: citaCompletadaData.creadoPor,
+        paciente: citaCompletadaData.paciente,
+        laboratorios: citaCompletadaData.laboratorios,
+        diagnosticos: citaCompletadaData.diagnosticos,
+        turno: citaCompletadaData.turno,
+        programa: citaCompletadaData.programa,
+        fecha: citaCompletadaData.fecha,
+        nota: citaCompletadaData.nota,
+        estado: citaCompletadaData.estado,
+        motivos: citaCompletadaData.motivos,
+      });
+
+      await citaCompletadaMongo.save();
+    }
 
     return {
       message: 'Cita completed successfully',

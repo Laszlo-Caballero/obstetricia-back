@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { CitaService } from './cita.service';
 import { CitaController } from './cita.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 import { Receta } from 'src/farmacia/receta/entities/receta.entity';
 import { Personal } from 'src/personal/entities/personal.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
@@ -14,6 +15,10 @@ import { Motivo } from 'src/motivos/entities/motivo.entity';
 import { RecetaMedicina } from 'src/farmacia/receta-medicina/entities/receta-medicina.entity';
 import { Medicina } from 'src/farmacia/medicina/entities/medicina.entity';
 import { Recurso } from 'src/recurso/entities/recurso.entity';
+import {
+  CitaCompletada,
+  CitaCompletadaSchema,
+} from './entities/cita-completada.entity';
 
 @Module({
   imports: [
@@ -30,6 +35,9 @@ import { Recurso } from 'src/recurso/entities/recurso.entity';
       RecetaMedicina,
       Medicina,
       Recurso,
+    ]),
+    MongooseModule.forFeature([
+      { name: CitaCompletada.name, schema: CitaCompletadaSchema },
     ]),
   ],
   controllers: [CitaController],
